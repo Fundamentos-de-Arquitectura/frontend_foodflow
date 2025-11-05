@@ -1,0 +1,59 @@
+.subscriptions-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+h2 {
+  margin-bottom: 2rem;
+  color: #2e7d32;
+}
+
+.plans-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.plan-card {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 340px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+mat-card-content {
+  flex-grow: 1;
+}
+
+.price {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #388e3c;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem;
+}
+
+li {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* --- Botón centrado al fondo --- */
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: auto;
+  padding-bottom: 1rem;
+}
