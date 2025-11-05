@@ -1,9 +1,12 @@
 <div class="layout">
   <app-sidebar></app-sidebar>
+
   <div class="content">
     <app-topbar></app-topbar>
     <main>
-      <router-outlet></router-outlet>
+      <div class="page-container">
+        <router-outlet></router-outlet>
+      </div>
     </main>
   </div>
 </div>
