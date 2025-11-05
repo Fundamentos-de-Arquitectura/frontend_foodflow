@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 220px;
+  height: 100vh;
+  background-color: #f0faf5;
+}
+
+.app-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1rem;
+  color: #2e7d32;
+}
+
+.bottom-section {
+  margin-top: auto;
+  padding-bottom: 1rem;
+}

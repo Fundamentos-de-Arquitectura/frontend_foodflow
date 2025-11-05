@@ -1,0 +1,11 @@
+<mat-toolbar color="primary" class="topbar">
+  <span class="spacer"></span>
+
+  <mat-select [(value)]="selectedLang">
+    <mat-option *ngFor="let lang of languages" [value]="lang">{{ lang }}</mat-option>
+  </mat-select>
+
+  <span class="subscription">{{ subscriptionType }}</span>
+
+  <button mat-button (click)="onLogout()">Log Out</button>
+</mat-toolbar>
