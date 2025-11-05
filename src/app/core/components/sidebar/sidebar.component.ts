@@ -1,23 +1,25 @@
 import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [MatListModule, MatIconModule],
+  imports: [MatListModule, MatIconModule, MatDividerModule, RouterModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
   navItems = [
-    { icon: 'dashboard', label: 'Dashboard' },
-    { icon: 'restaurant_menu', label: 'Menu' },
-    { icon: 'inventory_2', label: 'Inventory' },
-    { icon: 'receipt_long', label: 'Orders' },
-    { icon: 'bar_chart', label: 'Reports' },
-    { icon: 'subscriptions', label: 'Subscriptions' },
+    { icon: 'dashboard', label: 'Dashboard', route: '/dashboard' },
+    { icon: 'restaurant_menu', label: 'Menu', route: '/menu' },
+    { icon: 'inventory_2', label: 'Inventory', route: '/inventory' },
+    { icon: 'receipt_long', label: 'Orders', route: '/orders' },
+    { icon: 'bar_chart', label: 'Reports', route: '/reports' },
+    { icon: 'subscriptions', label: 'Subscriptions', route: '/subscriptions' },
   ];
 
-  profileItem = { icon: 'person', label: 'Profile' };
+  profileItem = { icon: 'person', label: 'Profile', route: '/profile' };
 }
