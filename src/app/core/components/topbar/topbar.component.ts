@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [MatToolbarModule, MatButtonModule, MatSelectModule],
+  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatSelectModule, MatOptionModule],
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.css']
 })
