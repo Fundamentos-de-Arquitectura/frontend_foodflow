@@ -1,0 +1,22 @@
+<div class="profile-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-icon mat-card-avatar>account_circle</mat-icon>
+      <mat-card-title>{{ user.name }}</mat-card-title>
+      <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <p><strong>Subscription:</strong> {{ user.subscription }}</p>
+      <p><strong>Member since:</strong> {{ user.joinedAt | date }}</p>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="editProfile()">
+        Edit Profile
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
