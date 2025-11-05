@@ -1,16 +1,35 @@
 .layout {
   display: flex;
   height: 100vh;
+  background-color: #f8f9fa;
 }
 
+/* Sidebar */
+app-sidebar {
+  width: 240px;
+  border-right: 1px solid #e0e0e0;
+  background-color: #ffffff;
+}
+
+/* Content */
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-main {
+/* Topbar */
+app-topbar {
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+/* Page area */
+.page-container {
   flex: 1;
   padding: 1.5rem;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
   background-color: #fff;
 }
