@@ -1,0 +1,14 @@
+{
+  "TITLE": "FoodFlow",
+  "DASHBOARD": "Panel",
+  "MENU": "Menú",
+  "INVENTORY": "Inventario",
+  "ORDERS": "Pedidos",
+  "REPORTS": "Reportes",
+  "SUBSCRIPTIONS": "Suscripciones",
+  "PROFILE": "Perfil",
+  "LOGOUT": "Cerrar sesión",
+  "LANGUAGE": "Idioma",
+  "CHOOSE_PLAN": "Elige tu plan",
+  "SELECT": "Seleccionar"
+}

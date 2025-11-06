@@ -1,11 +1,18 @@
-<mat-toolbar color="primary" class="topbar">
-  <span class="spacer"></span>
+<div class="topbar">
 
-  <mat-select [(value)]="selectedLang">
-    <mat-option *ngFor="let lang of languages" [value]="lang">{{ lang }}</mat-option>
-  </mat-select>
+  <div class="right">
+    <mat-form-field appearance="outline" class="lang-select">
+      <mat-select
+        [value]="translate.currentLang"
+        (selectionChange)="changeLanguage($event.value)">
+        <mat-option *ngFor="let lang of languages" [value]="lang.code">
+          {{ lang.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <span class="subscription">{{ subscriptionType }}</span>
-
-  <button mat-button (click)="onLogout()">Log Out</button>
-</mat-toolbar>
+    <button mat-raised-button color="warn" (click)="logout()">
+      {{ 'LOGOUT' | translate }}
+    </button>
+  </div>
+</div>

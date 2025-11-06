@@ -1,13 +1,11 @@
-import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { routes } from './app.routes';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { ShellComponent } from './core/layout/shell.component';
 
-export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(),
-    provideAnimationsAsync()
-  ]
-};
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, ShellComponent],
+  template: `<app-shell></app-shell>`
+})
+export class AppComponent {}
