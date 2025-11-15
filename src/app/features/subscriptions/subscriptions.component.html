@@ -1,23 +1,31 @@
 <div class="subscriptions-container">
-  <h2>Choose your plan</h2>
+  <h1>Subscription Plans</h1>
+  <p class="current-plan">Current Plan: <strong>{{ currentPlan }}</strong></p>
 
   <div class="plans-grid">
-    <mat-card *ngFor="let plan of plans" class="plan-card">
+    <mat-card *ngFor="let plan of plans" class="plan-card" [class.current-plan-card]="plan.isCurrent">
       <mat-card-header>
         <mat-icon>{{ plan.icon }}</mat-icon>
         <mat-card-title>{{ plan.name }}</mat-card-title>
+        <div class="plan-badge" *ngIf="plan.isCurrent">Current Plan</div>
       </mat-card-header>
 
       <mat-card-content>
         <p class="price">{{ plan.price }}</p>
-        <ul>
+        <ul class="features-list">
           <li *ngFor="let feature of plan.features">{{ feature }}</li>
         </ul>
       </mat-card-content>
 
-      <mat-card-actions>
+      <mat-card-actions *ngIf="!plan.isCurrent && plan.allowUpgrade">
         <button mat-raised-button color="primary" (click)="selectPlan(plan.name)">
-          Select
+          Upgrade to {{ plan.name }}
+        </button>
+      </mat-card-actions>
+
+      <mat-card-actions *ngIf="plan.isCurrent">
+        <button mat-button *ngIf="plan.name === 'Premium'" (click)="cancelPremium()">
+          Cancel Subscription
         </button>
       </mat-card-actions>
     </mat-card>

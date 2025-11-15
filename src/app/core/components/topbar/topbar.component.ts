@@ -29,6 +29,11 @@ export class TopbarComponent {
   }
 
   logout() {
+    // Clear authentication token
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    // Navigate to login
     this.router.navigate(['/login']);
   }
 }

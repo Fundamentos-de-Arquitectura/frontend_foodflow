@@ -1,24 +1,38 @@
 <div class="auth-container">
   <h2>Login to FoodFlow</h2>
 
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
       <mat-label>Email</mat-label>
       <input matInput formControlName="email" type="email" />
+      <mat-error *ngIf="form.get('email')?.hasError('required')">
+        Email is required
+      </mat-error>
+      <mat-error *ngIf="form.get('email')?.hasError('email')">
+        Please enter a valid email address
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Password</mat-label>
       <input matInput formControlName="password" type="password" />
+      <mat-error *ngIf="form.get('password')?.hasError('required')">
+        Password is required
+      </mat-error>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit">
-      Log In
+    <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || form.invalid">
+      <span *ngIf="!isLoading">Log In</span>
+      <span *ngIf="isLoading">Logging in...</span>
     </button>
   </form>
 
   <p class="link">
-    Don’t have an account?
+    Don't have an account?
     <button mat-button color="primary" type="button" routerLink="/signup">
       Sign up
     </button>
