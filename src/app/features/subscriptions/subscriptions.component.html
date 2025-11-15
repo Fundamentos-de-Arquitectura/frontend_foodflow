@@ -1,31 +1,31 @@
 <div class="subscriptions-container">
-  <h1>Subscription Plans</h1>
-  <p class="current-plan">Current Plan: <strong>{{ currentPlan }}</strong></p>
+  <h1>{{ 'SUBSCRIPTION_PLANS' | translate }}</h1>
+  <p class="current-plan">{{ 'CURRENT_PLAN' | translate }}: <strong>{{ currentPlan | translate }}</strong></p>
 
   <div class="plans-grid">
     <mat-card *ngFor="let plan of plans" class="plan-card" [class.current-plan-card]="plan.isCurrent">
       <mat-card-header>
         <mat-icon>{{ plan.icon }}</mat-icon>
-        <mat-card-title>{{ plan.name }}</mat-card-title>
-        <div class="plan-badge" *ngIf="plan.isCurrent">Current Plan</div>
+        <mat-card-title>{{ plan.nameKey | translate }}</mat-card-title>
+        <div class="plan-badge" *ngIf="plan.isCurrent">{{ 'CURRENT_PLAN_BADGE' | translate }}</div>
       </mat-card-header>
 
       <mat-card-content>
-        <p class="price">{{ plan.price }}</p>
+        <p class="price">{{ plan.priceKey | translate }}</p>
         <ul class="features-list">
-          <li *ngFor="let feature of plan.features">{{ feature }}</li>
+          <li *ngFor="let feature of plan.features">{{ feature | translate }}</li>
         </ul>
       </mat-card-content>
 
       <mat-card-actions *ngIf="!plan.isCurrent && plan.allowUpgrade">
-        <button mat-raised-button color="primary" (click)="selectPlan(plan.name)">
-          Upgrade to {{ plan.name }}
+        <button mat-raised-button color="primary" (click)="selectPlan(plan.nameKey)">
+          {{ 'UPGRADE_TO' | translate:{plan: (plan.nameKey | translate)} }}
         </button>
       </mat-card-actions>
 
       <mat-card-actions *ngIf="plan.isCurrent">
-        <button mat-button *ngIf="plan.name === 'Premium'" (click)="cancelPremium()">
-          Cancel Subscription
+        <button mat-button *ngIf="plan.nameKey === 'PREMIUM_PLAN'" (click)="cancelPremium()">
+          {{ 'CANCEL_SUBSCRIPTION' | translate }}
         </button>
       </mat-card-actions>
     </mat-card>

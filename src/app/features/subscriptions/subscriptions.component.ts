@@ -6,86 +6,91 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-subscriptions',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatDialogModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatDialogModule, TranslateModule],
   templateUrl: './subscriptions.component.html',
   styleUrls: ['./subscriptions.component.css']
 })
 export class SubscriptionsComponent implements OnInit {
-  currentPlan = 'Basic';
+  currentPlan = 'BASIC_PLAN';
   plans = [
     {
-      name: 'Basic',
-      price: 'Free',
+      nameKey: 'BASIC_PLAN',
+      priceKey: 'FREE',
       features: [
-        'Inventory management (up to 50 items)',
-        'Basic reporting',
-        'Menu management (up to 20 dishes)',
-        'Order tracking',
-        'Community support'
+        'BASIC_FEATURE_1',
+        'BASIC_FEATURE_2',
+        'BASIC_FEATURE_3',
+        'BASIC_FEATURE_4',
+        'BASIC_FEATURE_5'
       ],
       icon: 'star_border',
       isCurrent: true
     },
     {
-      name: 'Premium',
-      price: '$49.99 / month',
+      nameKey: 'PREMIUM_PLAN',
+      priceKey: 'PREMIUM_PRICE',
       features: [
-        'Unlimited inventory items',
-        'Advanced reporting and analytics',
-        'Unlimited menu management',
-        'Priority support',
-        'Custom integrations',
-        'Data export'
+        'PREMIUM_FEATURE_1',
+        'PREMIUM_FEATURE_2',
+        'PREMIUM_FEATURE_3',
+        'PREMIUM_FEATURE_4',
+        'PREMIUM_FEATURE_5',
+        'PREMIUM_FEATURE_6'
       ],
       icon: 'star',
       allowUpgrade: true
     }
   ];
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private translate: TranslateService) {}
 
   ngOnInit(): void {
     this.updatePlanStatus();
   }
 
-  selectPlan(planName: string): void {
-    if (planName === this.currentPlan) {
+  selectPlan(planNameKey: string): void {
+    if (planNameKey === this.currentPlan) {
       return; // Already on this plan
     }
 
-    if (planName === 'Premium') {
+    if (planNameKey === 'PREMIUM_PLAN') {
       this.upgradeToPremium();
     }
   }
 
   private upgradeToPremium(): void {
     // Simulate subscription process
-    const confirmed = confirm('Subscribe to Premium plan for $49.99/month?');
+    const confirmMessage = this.translate.instant('CONFIRM_PREMIUM_UPGRADE');
+    const confirmed = confirm(confirmMessage);
     if (confirmed) {
       // Simulate payment and activation
-      this.currentPlan = 'Premium';
+      this.currentPlan = 'PREMIUM_PLAN';
       this.updatePlanStatus();
-      alert('Successfully upgraded to Premium plan!');
+      const successMessage = this.translate.instant('UPGRADE_SUCCESS');
+      alert(successMessage);
     }
   }
 
   cancelPremium(): void {
-    const confirmed = confirm('Cancel your Premium subscription? You will lose access at the end of your billing period.');
+    const confirmMessage = this.translate.instant('CONFIRM_CANCEL');
+    const confirmed = confirm(confirmMessage);
     if (confirmed) {
-      this.currentPlan = 'Basic';
+      this.currentPlan = 'BASIC_PLAN';
       this.updatePlanStatus();
-      alert('Premium subscription will be canceled at the end of the billing period.');
+      const successMessage = this.translate.instant('CANCEL_SUCCESS');
+      alert(successMessage);
     }
   }
 
   private updatePlanStatus(): void {
     this.plans.forEach(plan => {
-      plan.isCurrent = plan.name === this.currentPlan;
-      plan.allowUpgrade = plan.name !== this.currentPlan;
+      plan.isCurrent = plan.nameKey === this.currentPlan;
+      plan.allowUpgrade = plan.nameKey !== this.currentPlan;
     });
   }
 }

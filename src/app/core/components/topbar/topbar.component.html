@@ -1,12 +1,12 @@
-<div class="topbar">
+shi<div class="topbar">
 
   <div class="right">
     <mat-form-field appearance="outline" class="lang-select">
       <mat-select
-        [value]="translate.currentLang"
+        [value]="currentLang"
         (selectionChange)="changeLanguage($event.value)">
         <mat-option *ngFor="let lang of languages" [value]="lang.code">
-          {{ lang.label }}
+          {{ lang.label | translate }}
         </mat-option>
       </mat-select>
     </mat-form-field>
