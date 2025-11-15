@@ -8,6 +8,15 @@
   background-color: #ffffff;
 }
 
+.error-message {
+  padding: 10px;
+  margin-bottom: 1rem;
+  background-color: #ffebee;
+  color: #c62828;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
 mat-form-field {
   width: 100%;
   margin-bottom: 1rem;

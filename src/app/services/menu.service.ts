@@ -1,79 +1,110 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 
+// Backend Dish structure (from menu service)
+export interface BackendIngredient {
+  name: string;
+  quantity: number;
+  unit: string;
+}
+
+export interface BackendDish {
+  id: number;
+  name: string;
+  ingredients: BackendIngredient[];
+  price: number;
+  description: string;
+  userId: number;
+}
+
+// Frontend Dish interface (for UI compatibility)
 export interface Dish {
   id?: number;
   name: string;
   description: string;
   price: number;
-  ingredients: string;
+  ingredients: string; // Frontend uses string, backend uses array
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class MenuService {
-  private dishesSubject = new BehaviorSubject<Dish[]>([]);
-  private dishes$ = this.dishesSubject.asObservable();
+  private apiUrl = 'http://localhost:8060/api/v1/menu'; // API Gateway routes to menu service
 
-  constructor() {
-    // Load initial mock data
-    this.loadInitialData();
-  }
-
-  private loadInitialData(): void {
-    const mockDishes: Dish[] = [
-      {
-        id: 1,
-        name: 'Margherita Pizza',
-        description: 'Classic pizza with tomato sauce, mozzarella, and basil',
-        price: 12.99,
-        ingredients: 'Tomato sauce, mozzarella, basil, olive oil'
-      },
-      {
-        id: 2,
-        name: 'Chicken Burger',
-        description: 'Grilled chicken burger with lettuce, tomato, and mayo',
-        price: 10.50,
-        ingredients: 'Chicken breast, burger bun, lettuce, tomato, mayo'
-      },
-      {
-        id: 3,
-        name: 'Caesar Salad',
-        description: 'Fresh romaine lettuce with caesar dressing and croutons',
-        price: 8.99,
-        ingredients: 'Romaine lettuce, croutons, parmesan, caesar dressing'
-      }
-    ];
-    this.dishesSubject.next(mockDishes);
-  }
+  constructor(private http: HttpClient) {}
 
   getDishes(): Observable<Dish[]> {
-    return this.dishes$;
+    return this.http.get<BackendDish[]>(this.apiUrl).pipe(
+      map(dishes => dishes.map(d => this.mapBackendToFrontend(d)))
+    );
   }
 
   addDish(dish: Omit<Dish, 'id'>): Observable<Dish> {
-    const currentDishes = this.dishesSubject.value;
-    const newDish: Dish = {
-      ...dish,
-      id: Math.max(...currentDishes.map(d => d.id || 0), 0) + 1
+    // Note: Backend requires userId, but frontend doesn't have it
+    // This will need to be handled - either get from auth service or pass as parameter
+    // For now, using a placeholder userId (1)
+    const userId = 1; // TODO: Get from auth service or pass as parameter
+    
+    // Parse ingredients string to array format expected by backend
+    const ingredients = this.parseIngredientsString(dish.ingredients);
+    
+    const backendDish = {
+      name: dish.name,
+      description: dish.description,
+      price: dish.price,
+      ingredients: ingredients
     };
-    this.dishesSubject.next([...currentDishes, newDish]);
-    return new Observable(observer => {
-      observer.next(newDish);
-      observer.complete();
-    });
+    
+    return this.http.post<BackendDish>(`${this.apiUrl}/users/${userId}/dishes`, backendDish).pipe(
+      map(d => this.mapBackendToFrontend(d))
+    );
   }
 
   searchDishes(query: string): Observable<Dish[]> {
-    return new Observable(observer => {
-      const allDishes = this.dishesSubject.value;
-      const filteredDishes = query ?
-        allDishes.filter(dish =>
+    return this.getDishes().pipe(
+      map(dishes => query ?
+        dishes.filter(dish =>
           dish.name.toLowerCase().includes(query.toLowerCase())
-        ) : allDishes;
-      observer.next(filteredDishes);
-      observer.complete();
+        ) : dishes
+      )
+    );
+  }
+
+  private mapBackendToFrontend(backend: BackendDish): Dish {
+    return {
+      id: backend.id,
+      name: backend.name,
+      description: backend.description,
+      price: Number(backend.price),
+      ingredients: backend.ingredients.map(ing => 
+        `${ing.name} (${ing.quantity} ${ing.unit})`
+      ).join(', ')
+    };
+  }
+
+  private parseIngredientsString(ingredientsStr: string): Array<{name: string, quantity: number, unit: string}> {
+    // Simple parser - assumes format like "Tomato sauce, mozzarella, basil"
+    // For a more robust solution, you might want to enhance this
+    // For now, we'll create a simple mapping
+    const parts = ingredientsStr.split(',').map(s => s.trim());
+    return parts.map(part => {
+      // Try to extract quantity and unit if present (e.g., "2 cups flour" -> quantity: 2, unit: "cups", name: "flour")
+      const match = part.match(/^(\d+(?:\.\d+)?)\s+(\w+)\s+(.+)$/);
+      if (match) {
+        return {
+          name: match[3],
+          quantity: parseFloat(match[1]),
+          unit: match[2]
+        };
+      }
+      // Default: treat entire string as name with default quantity and unit
+      return {
+        name: part,
+        quantity: 1,
+        unit: 'unit'
+      };
     });
   }
 }

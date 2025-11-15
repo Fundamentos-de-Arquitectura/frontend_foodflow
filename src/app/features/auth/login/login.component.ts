@@ -5,7 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-// AuthService import removed - using mock authentication for demo
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -28,10 +28,11 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.form = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', Validators.required], // Changed from email to username
       password: ['', Validators.required],
     });
   }
@@ -41,34 +42,32 @@ export class LoginComponent {
       this.isLoading = true;
       this.errorMessage = '';
 
-      const credentials = this.form.getRawValue();
+      const { username, password } = this.form.getRawValue();
 
-      // Simulate successful login (in real app, this would call authService.login)
-      // For demo purposes, accept any email/password combination
-      this.simulateLogin(credentials);
+      // Call the real AuthService to login via API Gateway
+      this.authService.login({ username, password }).subscribe({
+        next: (response) => {
+          console.log('Login successful:', response);
+          this.isLoading = false;
+          
+          // Store user information if needed
+          if (response.id) {
+            localStorage.setItem('userId', response.id.toString());
+          }
+          if (response.role) {
+            localStorage.setItem('userRole', response.role);
+          }
+          
+          this.router.navigate(['/dashboard']);
+        },
+        error: (error) => {
+          console.error('Login error:', error);
+          this.isLoading = false;
+          this.errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
+        }
+      });
     } else {
       this.errorMessage = 'Please fill in all required fields correctly.';
     }
-  }
-
-  private simulateLogin(credentials: { email: string; password: string }): void {
-    // Simulate API delay
-    setTimeout(() => {
-      // Accept any login for demo
-      if (credentials.email && credentials.password) {
-        // Store a mock token
-        localStorage.setItem('token', 'demo-token-' + Date.now());
-        localStorage.setItem('user', JSON.stringify({
-          name: 'John Doe',
-          email: credentials.email
-        }));
-
-        this.isLoading = false;
-        this.router.navigate(['/dashboard']);
-      } else {
-        this.isLoading = false;
-        this.errorMessage = 'Invalid credentials. Please try again.';
-      }
-    }, 1000);
   }
 }

@@ -4,11 +4,11 @@ import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiUrl = 'https://localhost:8080/api/v1/authentication'; // ajusta según tu backend
+  private apiUrl = 'http://localhost:8060/api/v1/authentication'; // API Gateway routes to IAM service
 
   constructor(private http: HttpClient) {}
 
-  login(data: { email: string; password: string }): Observable<any> {
+  login(data: { username: string; password: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/sign-in`, data).pipe(
       tap((res: any) => {
         if (res?.token) {
@@ -18,7 +18,7 @@ export class AuthService {
     );
   }
 
-  signup(data: { name: string; email: string; password: string }): Observable<any> {
+  signup(data: { username: string; password: string; role: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/sign-up`, data).pipe(
       tap((res: any) => {
         if (res?.token) {

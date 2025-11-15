@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -22,26 +23,55 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class SignupComponent {
   form: FormGroup;
+  isLoading = false;
+  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.form = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      username: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
     });
   }
 
   onSubmit(): void {
     if (this.form.valid) {
-      const data = this.form.getRawValue();
-      console.log('Registro simulado:', data);
+      const { username, password, confirmPassword } = this.form.getRawValue();
+      
+      if (password !== confirmPassword) {
+        this.errorMessage = 'Passwords do not match';
+        return;
+      }
 
-      this.router.navigate(['/dashboard']);
+      this.isLoading = true;
+      this.errorMessage = '';
+
+      // Backend expects: username, password, role (must be "ADMIN")
+      const signupData = {
+        username,
+        password,
+        role: 'ADMIN' // Backend only accepts ADMIN role
+      };
+
+      this.authService.signup(signupData).subscribe({
+        next: (response) => {
+          console.log('User registered successfully:', response);
+          this.isLoading = false;
+          // After successful signup, redirect to login
+          this.router.navigate(['/login']);
+        },
+        error: (error) => {
+          console.error('Signup error:', error);
+          this.isLoading = false;
+          this.errorMessage = error.error?.message || 'Registration failed. Please try again.';
+        }
+      });
     } else {
-      console.warn('Formulario inválido');
+      this.errorMessage = 'Please fill in all required fields correctly.';
     }
   }
 }
