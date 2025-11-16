@@ -11,12 +11,21 @@ export interface BackendOrderItem {
   finalPrice: number;
 }
 
+export interface StockWarning {
+  ingredientName: string;
+  warningLevel: string; // "OUT_OF_STOCK", "LOW_STOCK", "CRITICAL"
+  availableQuantity: number;
+  requiredQuantity: number;
+  message: string;
+}
+
 export interface BackendOrder {
   id: number;
   tableNumber: number;
   items: BackendOrderItem[];
   totalPrice: number;
   createdAt: string;
+  stockWarnings?: StockWarning[]; // Optional stock warnings
 }
 
 // Frontend Order interface (for UI compatibility)
@@ -55,6 +64,13 @@ export class OrdersService {
   }
 
   addOrder(order: Omit<Order, 'id' | 'date'>): Observable<any> {
+    // Get userId from localStorage
+    const userIdStr = localStorage.getItem('userId');
+    if (!userIdStr) {
+      throw new Error('User ID not found. Please log in again.');
+    }
+    const userId = parseInt(userIdStr, 10);
+
     // Map frontend order to backend format
     const backendOrder = {
       tableNumber: order.tableNumber,
@@ -63,7 +79,8 @@ export class OrdersService {
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         finalPrice: item.total
-      }))
+      })),
+      userId: userId
     };
     return this.http.post(this.apiUrl, backendOrder);
   }
@@ -86,5 +103,21 @@ export class OrdersService {
       totalPrice: Number(backend.totalPrice),
       date: new Date(backend.createdAt)
     };
+  }
+
+  /**
+   * Extract error message from backend error
+   */
+  extractErrorMessage(error: any): string {
+    if (error.error?.error) {
+      return error.error.error;
+    }
+    if (error.error?.message) {
+      return error.error.message;
+    }
+    if (error.message) {
+      return error.message;
+    }
+    return 'An error occurred while processing the order';
   }
 }

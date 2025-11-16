@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
+import { ReportsService, ReportData } from '../../services/reports.service';
 
 interface PeriodData {
   periodType: string;
@@ -21,7 +22,11 @@ interface PeriodData {
     <div class="reports-container">
       <h1>Financial Reports</h1>
 
-      <mat-tab-group [selectedIndex]="selectedTab" (selectedTabChange)="onTabChange($event)">
+      <div *ngIf="isLoading" class="loading-message">
+        <p>Loading reports...</p>
+      </div>
+
+      <mat-tab-group *ngIf="!isLoading" [selectedIndex]="selectedTab" (selectedTabChange)="onTabChange($event)">
         <mat-tab label="Daily">
           <ng-container *ngTemplateOutlet="reportContent; context: {data: dailyData}"></ng-container>
         </mat-tab>
@@ -35,6 +40,9 @@ interface PeriodData {
 
       <ng-template #reportContent let-data="data">
         <div class="report-content" *ngIf="data">
+          <div *ngIf="data.income === 0 && data.expenses === 0" class="no-data-message">
+            <p>No data available for this period. Start creating orders and managing inventory to see reports!</p>
+          </div>
           <!-- Income and Expenses Summary -->
           <div class="summary-cards">
             <mat-card class="summary-card income-card">
@@ -173,55 +181,58 @@ interface PeriodData {
     .mat-tab-body-content {
       padding: 24px 0;
     }
+
+    .loading-message, .no-data-message {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
   `]
 })
 export class ReportsComponent implements OnInit {
   selectedTab = 0;
+  isLoading = true;
 
-  dailyData: PeriodData = {
-    periodType: 'Day',
-    income: 320.50,
-    expenses: 185.25,
-    incomeChange: 8.5,
-    expensesChange: -2.3,
-    expensesByCategory: [
-      { category: 'Ingredients', amount: 120.00 },
-      { category: 'Staff', amount: 35.25 },
-      { category: 'Utilities', amount: 20.00 },
-      { category: 'Equipment', amount: 10.00 }
-    ]
-  };
+  dailyData: PeriodData | null = null;
+  weeklyData: PeriodData | null = null;
+  monthlyData: PeriodData | null = null;
 
-  weeklyData: PeriodData = {
-    periodType: 'Week',
-    income: 2250.75,
-    expenses: 1285.50,
-    incomeChange: 12.1,
-    expensesChange: 5.8,
-    expensesByCategory: [
-      { category: 'Ingredients', amount: 850.00 },
-      { category: 'Staff', amount: 245.50 },
-      { category: 'Utilities', amount: 140.00 },
-      { category: 'Equipment', amount: 50.00 }
-    ]
-  };
-
-  monthlyData: PeriodData = {
-    periodType: 'Month',
-    income: 9750.25,
-    expenses: 5425.75,
-    incomeChange: -3.2,
-    expensesChange: 7.4,
-    expensesByCategory: [
-      { category: 'Ingredients', amount: 3650.00 },
-      { category: 'Staff', amount: 1075.75 },
-      { category: 'Utilities', amount: 600.00 },
-      { category: 'Equipment', amount: 100.00 }
-    ]
-  };
+  constructor(private reportsService: ReportsService) {}
 
   ngOnInit(): void {
-    // Data is already initialized
+    this.loadAllReports();
+  }
+
+  loadAllReports(): void {
+    this.isLoading = true;
+
+    // Load daily data
+    this.reportsService.getReportData('day').subscribe({
+      next: (data) => {
+        this.dailyData = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading daily report', err);
+        this.isLoading = false;
+      }
+    });
+
+    // Load weekly data
+    this.reportsService.getReportData('week').subscribe({
+      next: (data) => {
+        this.weeklyData = data;
+      },
+      error: (err) => console.error('Error loading weekly report', err)
+    });
+
+    // Load monthly data
+    this.reportsService.getReportData('month').subscribe({
+      next: (data) => {
+        this.monthlyData = data;
+      },
+      error: (err) => console.error('Error loading monthly report', err)
+    });
   }
 
   onTabChange(event: any): void {

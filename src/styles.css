@@ -1,22 +1,40 @@
-:root {
-  --foodflow-bg: #f9fcfa;
-  --foodflow-text: #1b1b1b;
-}
-
-html, body {
+/* Global styles */
+html, body { 
   height: 100%;
-  background-color: var(--foodflow-bg);
-  color: var(--foodflow-text);
-  font-family: 'Inter', sans-serif;
   margin: 0;
+  padding: 0;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif; 
 }
 
-button, .mat-mdc-button, .mat-mdc-raised-button {
-  text-transform: none;
-  font-weight: 500;
+/* Snackbar/Notification styles */
+.success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+.error-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+}
+
+.warning-snackbar {
+  background-color: #ff9800 !important;
+  color: white !important;
+}
+
+.info-snackbar {
+  background-color: #2196f3 !important;
+  color: white !important;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  min-width: 300px;
+}
+
+.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled) {
+  color: white !important;
 }

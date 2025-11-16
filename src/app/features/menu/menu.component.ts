@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MenuService, Dish } from '../../services/menu.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-menu',
@@ -166,7 +167,8 @@ export class MenuComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -193,10 +195,14 @@ export class MenuComponent implements OnInit {
       this.menuService.addDish(dishData).subscribe({
         next: (newDish) => {
           console.log('Dish added:', newDish);
+          this.notificationService.success(`Dish "${newDish.name}" added successfully!`);
           this.form.reset();
           this.loadDishes(); // Refresh the list
         },
-        error: (err) => console.error('Error adding dish', err)
+        error: (err) => {
+          console.error('Error adding dish', err);
+          this.notificationService.error('Failed to add dish. Please try again.');
+        }
       });
     }
   }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { ReportsService, DashboardData } from '../../services/reports.service';
 
 interface SummaryData {
   totalIncome: number;
@@ -24,8 +25,13 @@ interface TopDish {
     <div class="dashboard-container">
       <h1>Dashboard</h1>
 
-      <!-- Financial Summary -->
-      <div class="summary-cards">
+      <div *ngIf="isLoading" class="loading-message">
+        <p>Loading dashboard...</p>
+      </div>
+
+      <div *ngIf="!isLoading">
+        <!-- Financial Summary -->
+        <div class="summary-cards">
         <mat-card class="summary-card income-card">
           <mat-card-header>
             <mat-card-title>Total Income</mat-card-title>
@@ -53,13 +59,16 @@ interface TopDish {
         </mat-card>
       </div>
 
-      <!-- Top Dishes -->
-      <mat-card class="top-dishes-card">
-        <mat-card-header>
-          <mat-card-title>Top 5 Dishes</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <table mat-table [dataSource]="topDishes" class="top-dishes-table">
+        <!-- Top Dishes -->
+        <mat-card class="top-dishes-card">
+          <mat-card-header>
+            <mat-card-title>Top 5 Dishes</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div *ngIf="topDishes.length === 0" class="no-data-message">
+              <p>No dishes sold yet. Create orders to see top dishes!</p>
+            </div>
+            <table *ngIf="topDishes.length > 0" mat-table [dataSource]="topDishes" class="top-dishes-table">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>Dish Name</th>
               <td mat-cell *matCellDef="let dish">{{ dish.name }}</td>
@@ -77,11 +86,12 @@ interface TopDish {
               </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-          </table>
-        </mat-card-content>
-      </mat-card>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   `,
   styles: [`
@@ -135,6 +145,12 @@ interface TopDish {
       align-items: center;
       gap: 4px;
     }
+
+    .loading-message, .no-data-message {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
   `]
 })
 export class DashboardComponent implements OnInit {
@@ -148,28 +164,37 @@ export class DashboardComponent implements OnInit {
   topDishes: TopDish[] = [];
   maxSales: number = 0;
   displayedColumns: string[] = ['name', 'sales', 'chart'];
+  isLoading = true;
+
+  constructor(private reportsService: ReportsService) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
   }
 
   loadDashboardData(): void {
-    // Mock data for demonstration
-    this.summaryData = {
-      totalIncome: 1250.50,
-      totalExpenses: 780.25,
-      incomeChange: 12.5,
-      expensesChange: -8.3
-    };
+    this.isLoading = true;
+    
+    this.reportsService.getDashboardData().subscribe({
+      next: (data: DashboardData) => {
+        this.summaryData = {
+          totalIncome: data.totalIncome,
+          totalExpenses: data.totalExpenses,
+          incomeChange: data.incomeChange,
+          expensesChange: data.expensesChange
+        };
 
-    this.topDishes = [
-      { name: 'Margherita Pizza', sales: 45 },
-      { name: 'Chicken Burger', sales: 38 },
-      { name: 'Caesar Salad', sales: 32 },
-      { name: 'Spaghetti Carbonara', sales: 28 },
-      { name: 'Fish & Chips', sales: 24 }
-    ];
-
-    this.maxSales = Math.max(...this.topDishes.map(d => d.sales));
+        this.topDishes = data.topDishes;
+        this.maxSales = this.topDishes.length > 0 
+          ? Math.max(...this.topDishes.map(d => d.sales)) 
+          : 0;
+        
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading dashboard data', err);
+        this.isLoading = false;
+      }
+    });
   }
 }

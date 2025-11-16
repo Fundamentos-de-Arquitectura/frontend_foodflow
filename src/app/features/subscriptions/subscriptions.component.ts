@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-subscriptions',
@@ -17,6 +18,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 })
 export class SubscriptionsComponent implements OnInit {
   currentPlan = 'BASIC_PLAN';
+  userSubscription: any = null;
+  isLoading = true;
   plans = [
     {
       nameKey: 'BASIC_PLAN',
@@ -47,10 +50,39 @@ export class SubscriptionsComponent implements OnInit {
     }
   ];
 
-  constructor(private dialog: MatDialog, private translate: TranslateService) {}
+  constructor(private dialog: MatDialog, private translate: TranslateService, private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.updatePlanStatus();
+    this.loadUserSubscription();
+  }
+
+  loadUserSubscription(): void {
+    const userIdStr = localStorage.getItem('userId');
+    if (!userIdStr) {
+      console.error('User ID not found');
+      this.isLoading = false;
+      return;
+    }
+    
+    const userId = parseInt(userIdStr, 10);
+    
+    // Fetch user with subscription data from profiles service
+    this.http.get<any>(`http://localhost:8060/api/v1/profiles/users/${userId}/with-subscription`).subscribe({
+      next: (data) => {
+        this.userSubscription = data;
+        // Set current plan based on subscription data
+        if (data.planName) {
+          this.currentPlan = data.planName === 'PREMIUM' ? 'PREMIUM_PLAN' : 'BASIC_PLAN';
+        }
+        this.updatePlanStatus();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading subscription', err);
+        this.isLoading = false;
+        this.updatePlanStatus();
+      }
+    });
   }
 
   selectPlan(planNameKey: string): void {
@@ -64,19 +96,21 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   private upgradeToPremium(): void {
-    // Simulate subscription process
+    // TODO: Implement actual subscription upgrade API call
     const confirmMessage = this.translate.instant('CONFIRM_PREMIUM_UPGRADE');
     const confirmed = confirm(confirmMessage);
     if (confirmed) {
-      // Simulate payment and activation
+      // For now, just update the UI (later this should call the subscription API)
       this.currentPlan = 'PREMIUM_PLAN';
       this.updatePlanStatus();
       const successMessage = this.translate.instant('UPGRADE_SUCCESS');
       alert(successMessage);
+      this.loadUserSubscription(); // Reload subscription data
     }
   }
 
   cancelPremium(): void {
+    // TODO: Implement actual subscription cancellation API call
     const confirmMessage = this.translate.instant('CONFIRM_CANCEL');
     const confirmed = confirm(confirmMessage);
     if (confirmed) {
@@ -84,6 +118,7 @@ export class SubscriptionsComponent implements OnInit {
       this.updatePlanStatus();
       const successMessage = this.translate.instant('CANCEL_SUCCESS');
       alert(successMessage);
+      this.loadUserSubscription(); // Reload subscription data
     }
   }
 

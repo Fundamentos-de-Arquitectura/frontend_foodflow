@@ -36,16 +36,26 @@ export class MenuService {
   constructor(private http: HttpClient) {}
 
   getDishes(): Observable<Dish[]> {
-    return this.http.get<BackendDish[]>(this.apiUrl).pipe(
+    // Get userId from localStorage to fetch only user's dishes
+    const userIdStr = localStorage.getItem('userId');
+    if (!userIdStr) {
+      throw new Error('User ID not found. Please log in again.');
+    }
+    const userId = parseInt(userIdStr, 10);
+    
+    // Fetch only dishes created by this user
+    return this.http.get<BackendDish[]>(`${this.apiUrl}/users/${userId}/dishes`).pipe(
       map(dishes => dishes.map(d => this.mapBackendToFrontend(d)))
     );
   }
 
   addDish(dish: Omit<Dish, 'id'>): Observable<Dish> {
-    // Note: Backend requires userId, but frontend doesn't have it
-    // This will need to be handled - either get from auth service or pass as parameter
-    // For now, using a placeholder userId (1)
-    const userId = 1; // TODO: Get from auth service or pass as parameter
+    // Get userId from localStorage (set during login)
+    const userIdStr = localStorage.getItem('userId');
+    if (!userIdStr) {
+      throw new Error('User ID not found. Please log in again.');
+    }
+    const userId = parseInt(userIdStr, 10);
     
     // Parse ingredients string to array format expected by backend
     const ingredients = this.parseIngredientsString(dish.ingredients);

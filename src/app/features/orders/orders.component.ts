@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { OrdersService, Order } from '../../services/orders.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-orders',
@@ -66,7 +67,10 @@ export class OrdersComponent implements OnInit {
   displayedColumns: string[] = ['tableNumber', 'dishes', 'totalPrice', 'date'];
   orders: Order[] = [];
 
-  constructor(private ordersService: OrdersService) {}
+  constructor(
+    private ordersService: OrdersService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.loadOrders();
@@ -74,8 +78,17 @@ export class OrdersComponent implements OnInit {
 
   loadOrders(): void {
     this.ordersService.getOrders().subscribe({
-      next: (data) => this.orders = data,
-      error: (err) => console.error('Error loading orders', err)
+      next: (data) => {
+        this.orders = data;
+        if (data.length === 0) {
+          this.notificationService.info('No orders found');
+        }
+      },
+      error: (err) => {
+        console.error('Error loading orders', err);
+        const errorMsg = this.ordersService.extractErrorMessage(err);
+        this.notificationService.error(errorMsg);
+      }
     });
   }
 

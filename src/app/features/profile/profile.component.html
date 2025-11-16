@@ -1,11 +1,15 @@
 <div class="profile-container">
   <h1>Profile Settings</h1>
 
-  <mat-card>
+  <div *ngIf="isLoading">
+    <p>Loading profile...</p>
+  </div>
+
+  <mat-card *ngIf="!isLoading && profile">
     <mat-card-header>
       <mat-icon mat-card-avatar>account_circle</mat-icon>
-      <mat-card-title>{{ user.name }}</mat-card-title>
-      <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+      <mat-card-title>{{ profile.fullName }}</mat-card-title>
+      <mat-card-subtitle>{{ profile.email }}</mat-card-subtitle>
     </mat-card-header>
 
     <mat-divider></mat-divider>
@@ -13,20 +17,30 @@
     <mat-card-content>
       <div *ngIf="!isEditing">
         <!-- Display Mode -->
-        <p><strong>Subscription:</strong> {{ user.subscription }}</p>
-        <p><strong>Member since:</strong> {{ user.joinedAt | date }}</p>
+        <h3>Personal Information</h3>
+        <p><strong>Full Name:</strong> {{ profile.fullName }}</p>
+        <p><strong>Email:</strong> {{ profile.email }}</p>
+        <p><strong>Address:</strong> {{ profile.streetAddress }}</p>
+        
+        <mat-divider style="margin: 20px 0;"></mat-divider>
+        
+        <h3>Restaurant Information</h3>
+        <p><strong>Restaurant Name:</strong> {{ profile.restaurantName }}</p>
+        <p><strong>Description:</strong> {{ profile.restaurantDescription || 'Not provided' }}</p>
+        <p><strong>Phone:</strong> {{ profile.restaurantPhone || 'Not provided' }}</p>
       </div>
 
       <div *ngIf="isEditing">
         <!-- Edit Mode -->
         <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="profile-form">
+          <h3>Personal Information</h3>
           <mat-form-field appearance="outline">
-            <mat-label>Name</mat-label>
-            <input matInput formControlName="name" />
-            <mat-error *ngIf="profileForm.get('name')?.hasError('required')">
-              Name is required
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="fullName" />
+            <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">
+              Full name is required
             </mat-error>
-            <mat-error *ngIf="profileForm.get('name')?.hasError('minlength')">
+            <mat-error *ngIf="profileForm.get('fullName')?.hasError('minlength')">
               Name must be at least 2 characters
             </mat-error>
           </mat-form-field>
@@ -40,6 +54,25 @@
             <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
               Please enter a valid email
             </mat-error>
+          </mat-form-field>
+
+          <h3>Restaurant Information</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Restaurant Name</mat-label>
+            <input matInput formControlName="restaurantName" />
+            <mat-error *ngIf="profileForm.get('restaurantName')?.hasError('required')">
+              Restaurant name is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Restaurant Description</mat-label>
+            <textarea matInput formControlName="restaurantDescription" rows="3"></textarea>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Restaurant Phone</mat-label>
+            <input matInput formControlName="restaurantPhone" />
           </mat-form-field>
 
           <h4>Change Password (optional)</h4>
