@@ -54,7 +54,12 @@ export class OrdersService {
   constructor(private http: HttpClient) {}
 
   getOrders(): Observable<Order[]> {
-    return this.http.get<BackendOrder[]>(this.apiUrl).pipe(
+    const userIdStr = localStorage.getItem('userId');
+    if (!userIdStr) {
+      throw new Error('User ID not found. Please log in again.');
+    }
+    const userId = parseInt(userIdStr, 10);
+    return this.http.get<BackendOrder[]>(`${this.apiUrl}/users/${userId}`).pipe(
       map(orders => orders.map(o => this.mapBackendToFrontend(o)).sort((a, b) => b.date.getTime() - a.date.getTime()))
     );
   }

@@ -33,9 +33,14 @@ export class ReportsService {
    * Get dashboard data (today's summary + top dishes)
    */
   getDashboardData(): Observable<DashboardData> {
+    const userId = this.getUserId();
+    if (!userId) {
+      throw new Error('User ID not found. Please log in again.');
+    }
+    
     return forkJoin({
-      orders: this.getOrders().pipe(catchError(() => of([]))),
-      products: this.getProducts().pipe(catchError(() => of([])))
+      orders: this.getOrders(userId).pipe(catchError(() => of([]))),
+      products: this.getProducts(userId).pipe(catchError(() => of([])))
     }).pipe(
       map(({ orders, products }) => {
         const today = new Date();
@@ -104,10 +109,13 @@ export class ReportsService {
    */
   getReportData(period: 'day' | 'week' | 'month'): Observable<ReportData> {
     const userId = this.getUserId();
+    if (!userId) {
+      throw new Error('User ID not found. Please log in again.');
+    }
 
     return forkJoin({
-      orders: this.getOrders().pipe(catchError(() => of([]))),
-      products: this.getProducts().pipe(catchError(() => of([])))
+      orders: this.getOrders(userId).pipe(catchError(() => of([]))),
+      products: this.getProducts(userId).pipe(catchError(() => of([])))
     }).pipe(
       map(({ orders, products }) => {
         const now = new Date();
@@ -155,17 +163,17 @@ export class ReportsService {
     );
   }
 
-  private getUserId(): number {
+  private getUserId(): number | null {
     const userIdStr = localStorage.getItem('userId');
-    return userIdStr ? parseInt(userIdStr, 10) : 0;
+    return userIdStr ? parseInt(userIdStr, 10) : null;
   }
 
-  private getOrders(): Observable<any[]> {
-    return this.http.get<any[]>(this.ordersUrl);
+  private getOrders(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.ordersUrl}/users/${userId}`);
   }
 
-  private getProducts(): Observable<any[]> {
-    return this.http.get<any[]>(this.productsUrl);
+  private getProducts(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.productsUrl}/users/${userId}`);
   }
 
   private getStartDate(period: 'day' | 'week' | 'month', now: Date): Date {

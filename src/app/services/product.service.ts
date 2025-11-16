@@ -31,13 +31,23 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
+  private getUserId(): number {
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      throw new Error('User ID not found. Please log in again.');
+    }
+    return parseInt(userId, 10);
+  }
+
   getProducts(): Observable<Product[]> {
-    return this.http.get<BackendProduct[]>(this.apiUrl).pipe(
+    const userId = this.getUserId();
+    return this.http.get<BackendProduct[]>(`${this.apiUrl}/users/${userId}`).pipe(
       map(products => products.map(p => this.mapBackendToFrontend(p)))
     );
   }
 
   addProduct(product: Product): Observable<any> {
+    const userId = this.getUserId();
     // Map frontend product to backend format
     // Backend expects: name (String), productItemId (Long | null), quantity (Integer), expirationDate (LocalDate - REQUIRED, must be future date), price (BigDecimal)
     // ExpirationDate cannot be null - set to 1 year from now as default
@@ -52,7 +62,7 @@ export class ProductService {
       expirationDate: expirationDateString, // Set to 1 year from now (required, must be future date)
       price: product.unitPrice // Will be converted to BigDecimal by backend
     };
-    return this.http.post(this.apiUrl, backendProduct);
+    return this.http.post(`${this.apiUrl}/users/${userId}`, backendProduct);
   }
 
   private mapBackendToFrontend(backend: BackendProduct): Product {
