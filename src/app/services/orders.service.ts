@@ -107,17 +107,64 @@ export class OrdersService {
 
   /**
    * Extract error message from backend error
+   * Parses stock-related errors to display user-friendly messages
    */
   extractErrorMessage(error: any): string {
+    let errorMessage = '';
+    
     if (error.error?.error) {
-      return error.error.error;
+      errorMessage = error.error.error;
+    } else if (error.error?.message) {
+      errorMessage = error.error.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    } else {
+      return 'An error occurred while processing the order';
     }
-    if (error.error?.message) {
-      return error.error.message;
+
+    // Check for stock-related errors and format them nicely
+    if (errorMessage.toLowerCase().includes('inventory') || 
+        errorMessage.toLowerCase().includes('stock') ||
+        errorMessage.toLowerCase().includes('ingredient')) {
+      
+      // Check for "no stock" errors
+      if (errorMessage.toLowerCase().includes('no ') || 
+          errorMessage.toLowerCase().includes('has no')) {
+        // Extract ingredient name if possible
+        const match = errorMessage.match(/has no ([\w\s]+)|no ([\w\s]+)/i);
+        if (match) {
+          const ingredient = (match[1] || match[2]).trim();
+          return `⚠️ URGENT: ${ingredient} is OUT OF STOCK and must be purchased immediately before this order can be fulfilled.`;
+        }
+        return `⚠️ URGENT: One or more ingredients are OUT OF STOCK and must be purchased immediately.`;
+      }
+      
+      // Check for "not enough" errors
+      if (errorMessage.toLowerCase().includes("doesn't have enough") ||
+          errorMessage.toLowerCase().includes('not enough') ||
+          errorMessage.toLowerCase().includes('insufficient')) {
+        // Extract ingredient name and quantities if possible
+        const match = errorMessage.match(/(?:doesn't have enough|not enough|insufficient)\s+([\w\s]+)\.?\s*(?:Required[:\s]+([\d.]+))?(?:,\s*Available[:\s]+(\d+))?/i);
+        if (match) {
+          const ingredient = match[1].trim();
+          const required = match[2] || 'required amount';
+          const available = match[3] || 'current stock';
+          return `⚠️ ${ingredient} is running LOW. Required: ${required}, Available: ${available}. Please purchase immediately.`;
+        }
+        return `⚠️ One or more ingredients have INSUFFICIENT STOCK. Please check inventory and purchase missing items immediately.`;
+      }
+      
+      // Check for "ingredient not found" errors
+      if (errorMessage.toLowerCase().includes('ingredient not found')) {
+        const match = errorMessage.match(/Ingredient not found[:\s]+([\w\s]+)/i);
+        if (match) {
+          const ingredient = match[1].trim();
+          return `⚠️ ${ingredient} is not in inventory. Please add it to inventory first.`;
+        }
+        return `⚠️ One or more ingredients are not in inventory. Please add them to inventory first.`;
+      }
     }
-    if (error.message) {
-      return error.message;
-    }
-    return 'An error occurred while processing the order';
+
+    return errorMessage;
   }
 }

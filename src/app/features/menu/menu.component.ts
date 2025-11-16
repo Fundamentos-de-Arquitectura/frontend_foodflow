@@ -64,7 +64,9 @@ import { NotificationService } from '../../services/notification.service';
 
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Ingredients</mat-label>
-              <textarea matInput formControlName="ingredients" rows="2"></textarea>
+              <textarea matInput formControlName="ingredients" rows="3" 
+                placeholder="Format: ingredient name, quantity unit (e.g., 'Tomato sauce 2 cups, Mozzarella 500 g, Basil 10 unit')"></textarea>
+              <mat-hint>Enter ingredients separated by commas. Format: name quantity unit (e.g., 'Flour 2 cups, Milk 500 ml')</mat-hint>
               <mat-error *ngIf="form.get('ingredients')?.hasError('required')">
                 Ingredients are required
               </mat-error>

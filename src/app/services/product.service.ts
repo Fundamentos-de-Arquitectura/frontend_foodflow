@@ -39,12 +39,18 @@ export class ProductService {
 
   addProduct(product: Product): Observable<any> {
     // Map frontend product to backend format
+    // Backend expects: name (String), productItemId (Long | null), quantity (Integer), expirationDate (LocalDate - REQUIRED, must be future date), price (BigDecimal)
+    // ExpirationDate cannot be null - set to 1 year from now as default
+    const expirationDate = new Date();
+    expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+    const expirationDateString = expirationDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    
     const backendProduct = {
       name: product.name,
-      productItemId: product.id || null,
-      quantity: product.quantity,
-      expirationDate: null, // Can be set if needed
-      price: product.unitPrice
+      productItemId: product.id ? product.id : null,
+      quantity: Math.floor(product.quantity), // Ensure integer
+      expirationDate: expirationDateString, // Set to 1 year from now (required, must be future date)
+      price: product.unitPrice // Will be converted to BigDecimal by backend
     };
     return this.http.post(this.apiUrl, backendProduct);
   }
