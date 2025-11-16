@@ -3,7 +3,10 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReportsService, DashboardData } from '../../services/reports.service';
+import { StockAlertService, StockAlert } from '../../services/stock-alert.service';
+import { NotificationService } from '../../services/notification.service';
 
 interface SummaryData {
   totalIncome: number;
@@ -20,7 +23,7 @@ interface TopDish {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule, MatSnackBarModule],
   template: `
     <div class="dashboard-container">
       <h1>Dashboard</h1>
@@ -30,6 +33,23 @@ interface TopDish {
       </div>
 
       <div *ngIf="!isLoading">
+        <!-- Stock Alerts -->
+        <div *ngIf="stockAlerts.length > 0" class="stock-alerts">
+          <mat-card *ngFor="let alert of stockAlerts" 
+                   [class]="'alert-card ' + alert.severity + '-alert'">
+            <mat-card-content>
+              <div class="alert-content">
+                <mat-icon class="alert-icon">{{ getAlertIcon(alert.severity) }}</mat-icon>
+                <div class="alert-message">
+                  <strong>{{ alert.ingredientName }}</strong>: Insufficient stock!
+                  Required: {{ alert.requiredQuantity }}, Available: {{ alert.availableQuantity }}, 
+                  Shortage: {{ alert.shortage }}
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
         <!-- Financial Summary -->
         <div class="summary-cards">
         <mat-card class="summary-card income-card">
@@ -151,6 +171,57 @@ interface TopDish {
       padding: 40px;
       color: #666;
     }
+
+    .stock-alerts {
+      margin-bottom: 24px;
+    }
+
+    .alert-card {
+      margin-bottom: 12px;
+    }
+
+    .critical-alert {
+      border-left: 4px solid #f44336;
+      background-color: #ffebee;
+    }
+
+    .warning-alert {
+      border-left: 4px solid #ff9800;
+      background-color: #fff3e0;
+    }
+
+    .low-alert {
+      border-left: 4px solid #ffc107;
+      background-color: #fffde7;
+    }
+
+    .alert-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .alert-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .critical-alert .alert-icon {
+      color: #f44336;
+    }
+
+    .warning-alert .alert-icon {
+      color: #ff9800;
+    }
+
+    .low-alert .alert-icon {
+      color: #ffc107;
+    }
+
+    .alert-message {
+      flex: 1;
+    }
   `]
 })
 export class DashboardComponent implements OnInit {
@@ -165,11 +236,17 @@ export class DashboardComponent implements OnInit {
   maxSales: number = 0;
   displayedColumns: string[] = ['name', 'sales', 'chart'];
   isLoading = true;
+  stockAlerts: StockAlert[] = [];
 
-  constructor(private reportsService: ReportsService) {}
+  constructor(
+    private reportsService: ReportsService,
+    private stockAlertService: StockAlertService,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.loadDashboardData();
+    this.loadStockAlerts();
   }
 
   loadDashboardData(): void {
@@ -196,5 +273,42 @@ export class DashboardComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  loadStockAlerts(): void {
+    this.stockAlertService.checkStockAlerts().subscribe({
+      next: (alerts) => {
+        this.stockAlerts = alerts;
+        if (alerts.length > 0) {
+          // Show notification for critical alerts
+          const criticalAlerts = alerts.filter(a => a.severity === 'critical');
+          if (criticalAlerts.length > 0) {
+            const message = `⚠️ URGENT: ${criticalAlerts.length} ingredient(s) out of stock!`;
+            this.notificationService.warning(message, 8000);
+          } else {
+            const warningAlerts = alerts.filter(a => a.severity === 'warning');
+            if (warningAlerts.length > 0) {
+              this.notificationService.warning(`⚠️ ${warningAlerts.length} ingredient(s) have low stock`, 6000);
+            }
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Error loading stock alerts', err);
+      }
+    });
+  }
+
+  getAlertIcon(severity: string): string {
+    switch (severity) {
+      case 'critical':
+        return 'error';
+      case 'warning':
+        return 'warning';
+      case 'low':
+        return 'info';
+      default:
+        return 'info';
+    }
   }
 }

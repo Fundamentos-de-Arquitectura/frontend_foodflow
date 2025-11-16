@@ -19,3 +19,54 @@ table {
   width: 100%;
   margin-top: 1rem;
 }
+
+.stock-alerts {
+  margin-bottom: 1rem;
+}
+
+.alert-card {
+  margin-bottom: 12px;
+}
+
+.critical-alert {
+  border-left: 4px solid #f44336;
+  background-color: #ffebee;
+}
+
+.warning-alert {
+  border-left: 4px solid #ff9800;
+  background-color: #fff3e0;
+}
+
+.low-alert {
+  border-left: 4px solid #ffc107;
+  background-color: #fffde7;
+}
+
+.alert-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alert-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.critical-alert .alert-icon {
+  color: #f44336;
+}
+
+.warning-alert .alert-icon {
+  color: #ff9800;
+}
+
+.low-alert .alert-icon {
+  color: #ffc107;
+}
+
+.alert-message {
+  flex: 1;
+}

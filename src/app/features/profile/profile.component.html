@@ -1,5 +1,8 @@
-<div class="profile-container">
+<div  class="profile-header">
   <h1>Profile Settings</h1>
+</div>
+
+<div class="profile-container">
 
   <div *ngIf="isLoading">
     <p>Loading profile...</p>
@@ -21,9 +24,9 @@
         <p><strong>Full Name:</strong> {{ profile.fullName }}</p>
         <p><strong>Email:</strong> {{ profile.email }}</p>
         <p><strong>Address:</strong> {{ profile.streetAddress }}</p>
-        
+
         <mat-divider style="margin: 20px 0;"></mat-divider>
-        
+
         <h3>Restaurant Information</h3>
         <p><strong>Restaurant Name:</strong> {{ profile.restaurantName }}</p>
         <p><strong>Description:</strong> {{ profile.restaurantDescription || 'Not provided' }}</p>

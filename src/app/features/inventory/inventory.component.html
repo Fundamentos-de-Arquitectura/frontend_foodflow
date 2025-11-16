@@ -1,6 +1,23 @@
 <div class="inventory-container">
   <h2>Inventory</h2>
 
+  <!-- Stock Alerts -->
+  <div *ngIf="stockAlerts.length > 0" class="stock-alerts">
+    <mat-card *ngFor="let alert of stockAlerts" 
+             [class]="'alert-card ' + alert.severity + '-alert'">
+      <mat-card-content>
+        <div class="alert-content">
+          <mat-icon class="alert-icon">{{ getAlertIcon(alert.severity) }}</mat-icon>
+          <div class="alert-message">
+            <strong>{{ alert.ingredientName }}</strong>: Insufficient stock!
+            Required: {{ alert.requiredQuantity }}, Available: {{ alert.availableQuantity }}, 
+            Shortage: {{ alert.shortage }}
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
   <form [formGroup]="form" (ngSubmit)="addProduct()" class="product-form">
     <mat-form-field appearance="fill">
       <mat-label>Name</mat-label>
