@@ -98,11 +98,6 @@
     </mat-card-content>
 
     <mat-card-actions>
-      <div *ngIf="!isEditing">
-        <button mat-raised-button color="primary" (click)="toggleEdit()">
-          Edit Profile
-        </button>
-      </div>
 
       <div *ngIf="isEditing">
         <button mat-button (click)="cancelEdit()">

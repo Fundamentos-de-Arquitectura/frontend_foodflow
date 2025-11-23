@@ -28,8 +28,50 @@ import { NotificationService } from '../../services/notification.service';
     <div class="menu-container">
       <h1>Menu Management</h1>
 
-      <!-- Add Dish Form -->
-      <mat-card class="form-card">
+      <!-- Grid Layout: Manual on Left, Form on Right -->
+      <div class="form-grid">
+        <!-- Left Column: Ingredients Information Card -->
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>How to Enter Ingredients</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-content">
+              <p class="info-description">
+                Please enter the ingredients separated by commas.<br>
+                Each ingredient must follow this format:
+              </p>
+
+              <div class="format-section">
+                <strong>Name Quantity Unit</strong>
+              </div>
+
+              <div class="examples-section">
+                <strong>Examples:</strong>
+                <div class="example-item">Flour 2 cups</div>
+                <div class="example-item">Milk 500 ml</div>
+                <div class="example-item">Sugar 100 g</div>
+              </div>
+
+              <div class="full-example-section">
+                <strong>Full Example (3 ingredients)</strong>
+                <div class="full-example">Potato 2 units, GroundBeef 150 g, Onion 50 g</div>
+              </div>
+
+              <div class="tips-section">
+                <strong>Tips</strong>
+                <ul class="tips-list">
+                  <li>Do not use parentheses or extra symbols.</li>
+                  <li>Keep ingredient names simple (e.g., "Salt", "Butter", "Egg").</li>
+                  <li>Use standard units like g, ml, cups, tbsp, units.</li>
+                </ul>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Right Column: Add Dish Form -->
+        <mat-card class="form-card">
         <mat-card-header>
           <mat-card-title>Add New Dish</mat-card-title>
         </mat-card-header>
@@ -64,9 +106,8 @@ import { NotificationService } from '../../services/notification.service';
 
             <mat-form-field appearance="outline" class="form-field">
               <mat-label>Ingredients</mat-label>
-              <textarea matInput formControlName="ingredients" rows="3" 
+              <textarea matInput formControlName="ingredients" rows="3"
                 placeholder="Format: ingredient name, quantity unit (e.g., 'Tomato sauce 2 cups, Mozzarella 500 g, Basil 10 unit')"></textarea>
-              <mat-hint>Enter ingredients separated by commas. Format: name quantity unit (e.g., 'Flour 2 cups, Milk 500 ml')</mat-hint>
               <mat-error *ngIf="form.get('ingredients')?.hasError('required')">
                 Ingredients are required
               </mat-error>
@@ -79,6 +120,7 @@ import { NotificationService } from '../../services/notification.service';
           </form>
         </mat-card-content>
       </mat-card>
+      </div>
 
       <!-- Search -->
       <mat-card class="search-card">
@@ -133,7 +175,25 @@ import { NotificationService } from '../../services/notification.service';
       margin: 0 auto;
     }
 
-    .form-card, .search-card, .table-card {
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 960px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-card, .search-card, .table-card, .info-card {
+      margin-bottom: 0;
+    }
+
+    .search-card, .table-card {
       margin-bottom: 24px;
     }
 
@@ -152,9 +212,89 @@ import { NotificationService } from '../../services/notification.service';
       max-width: 400px;
     }
 
-    .mat-mdc-card-content {
+    .search-card .mat-mdc-card-content {
       display: flex;
       justify-content: center;
+    }
+
+    .info-card {
+      background-color: rgba(186, 255, 184, 0.48);
+      border-left: 4px solid #1f6e1f;
+    }
+
+    .info-content {
+      padding: 8px 0;
+    }
+
+    .info-description {
+      margin: 0 0 16px 0;
+      line-height: 1.6;
+    }
+
+    .format-section {
+      margin: 16px 0;
+      padding: 12px;
+      background-color: #ffffff;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    .examples-section {
+      margin: 16px 0;
+    }
+
+    .examples-section strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .example-item {
+      padding: 8px 12px;
+      margin: 4px 0;
+      background-color: #ffffff;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      border-left: 3px solid #4caf50;
+    }
+
+    .full-example-section {
+      margin: 16px 0;
+    }
+
+    .full-example-section strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .full-example {
+      padding: 12px;
+      background-color: #ffffff;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      border: 1px solid #1976d2;
+      word-break: break-word;
+    }
+
+    .tips-section {
+      margin: 16px 0 0 0;
+    }
+
+    .tips-section strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .tips-list {
+      margin: 8px 0 0 0;
+      padding-left: 20px;
+    }
+
+    .tips-list li {
+      margin: 6px 0;
+      line-height: 1.5;
     }
 
     table {
