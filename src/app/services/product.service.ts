@@ -28,6 +28,7 @@ export interface Product {
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private apiUrl = 'http://localhost:8060/api/v1/products'; // API Gateway routes to inventory service
+  private unitMap = new Map<string, string>(); // Store units by product name
 
   constructor(private http: HttpClient) {}
 
@@ -48,6 +49,10 @@ export class ProductService {
 
   addProduct(product: Product): Observable<any> {
     const userId = this.getUserId();
+    // Store the unit value for this product
+    if (product.unit) {
+      this.unitMap.set(product.name, product.unit);
+    }
     // Map frontend product to backend format
     // Backend expects: name (String), productItemId (Long | null), quantity (Integer), expirationDate (LocalDate - REQUIRED, must be future date), price (BigDecimal)
     // ExpirationDate cannot be null - set to 1 year from now as default
@@ -66,12 +71,14 @@ export class ProductService {
   }
 
   private mapBackendToFrontend(backend: BackendProduct): Product {
+    // Use stored unit if available, otherwise default to 'unit'
+    const storedUnit = this.unitMap.get(backend.name);
     return {
       id: backend.productId,
       name: backend.name,
       quantity: backend.quantity?.quantity || 0,
       unitPrice: backend.price?.price ? Number(backend.price.price) : 0,
-      unit: 'unit' // Default unit since backend doesn't provide it
+      unit: storedUnit || 'unit' // Use stored unit or default to 'unit'
     };
   }
 }

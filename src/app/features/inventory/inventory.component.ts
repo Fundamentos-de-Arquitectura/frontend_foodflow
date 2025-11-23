@@ -74,9 +74,11 @@ export class InventoryComponent implements OnInit {
 
   addProduct(): void {
     if (this.form.valid) {
-      this.productService.addProduct(this.form.value).subscribe({
+      const formValue = this.form.value;
+      this.productService.addProduct(formValue).subscribe({
         next: (res) => {
-          this.products.push(res);
+          // Reload products to get the updated list with the correct unit (stored in service)
+          this.loadProducts();
           this.form.reset();
           this.loadStockAlerts(); // Reload alerts after adding product
         },
