@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -16,7 +17,8 @@ import { AuthService } from '../../../services/auth.service';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    TranslateModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -29,7 +31,8 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private translate: TranslateService
   ) {
     this.form = this.fb.group({
       username: ['', Validators.required], // Changed from email to username
@@ -63,11 +66,11 @@ export class LoginComponent {
         error: (error) => {
           console.error('Login error:', error);
           this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Login failed. Please check your credentials.';
+          this.errorMessage = error.error?.message || this.translate.instant('LOGIN_FAILED');
         }
       });
     } else {
-      this.errorMessage = 'Please fill in all required fields correctly.';
+      this.errorMessage = this.translate.instant('FILL_REQUIRED_FIELDS');
     }
   }
 }

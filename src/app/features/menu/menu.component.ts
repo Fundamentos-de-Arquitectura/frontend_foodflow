@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MenuService, Dish } from '../../services/menu.service';
 import { NotificationService } from '../../services/notification.service';
 
@@ -22,48 +23,46 @@ import { NotificationService } from '../../services/notification.service';
     MatInputModule,
     MatButtonModule,
     MatTableModule,
-    MatIconModule
+    MatIconModule,
+    TranslateModule
   ],
   template: `
     <div class="menu-container">
-      <h1>Menu Management</h1>
+      <h1>{{ 'MENU_MANAGEMENT' | translate }}</h1>
 
       <!-- Grid Layout: Manual on Left, Form on Right -->
       <div class="form-grid">
         <!-- Left Column: Ingredients Information Card -->
         <mat-card class="info-card">
           <mat-card-header>
-            <mat-card-title>How to Enter Ingredients</mat-card-title>
+            <mat-card-title>{{ 'HOW_TO_ENTER_INGREDIENTS' | translate }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div class="info-content">
-              <p class="info-description">
-                Please enter the ingredients separated by commas.<br>
-                Each ingredient must follow this format:
-              </p>
+              <p class="info-description" [innerHTML]="'INGREDIENTS_INSTRUCTIONS' | translate"></p>
 
               <div class="format-section">
-                <strong>Name Quantity Unit</strong>
+                <strong>{{ 'INGREDIENT_FORMAT' | translate }}</strong>
               </div>
 
               <div class="examples-section">
-                <strong>Examples:</strong>
-                <div class="example-item">Flour 2 cups</div>
-                <div class="example-item">Milk 500 ml</div>
-                <div class="example-item">Sugar 100 g</div>
+                <strong>{{ 'EXAMPLES' | translate }}</strong>
+                <div class="example-item">{{ 'EXAMPLE_1' | translate }}</div>
+                <div class="example-item">{{ 'EXAMPLE_2' | translate }}</div>
+                <div class="example-item">{{ 'EXAMPLE_3' | translate }}</div>
               </div>
 
               <div class="full-example-section">
-                <strong>Full Example (3 ingredients)</strong>
-                <div class="full-example">Potato 2 units, GroundBeef 150 g, Onion 50 g</div>
+                <strong>{{ 'FULL_EXAMPLE' | translate }}</strong>
+                <div class="full-example">{{ 'FULL_EXAMPLE_TEXT' | translate }}</div>
               </div>
 
               <div class="tips-section">
-                <strong>Tips</strong>
+                <strong>{{ 'TIPS' | translate }}</strong>
                 <ul class="tips-list">
-                  <li>Do not use parentheses or extra symbols.</li>
-                  <li>Keep ingredient names simple (e.g., "Salt", "Butter", "Egg").</li>
-                  <li>Use standard units like g, ml, cups, tbsp, units.</li>
+                  <li>{{ 'TIP_1' | translate }}</li>
+                  <li>{{ 'TIP_2' | translate }}</li>
+                  <li>{{ 'TIP_3' | translate }}</li>
                 </ul>
               </div>
             </div>
@@ -73,49 +72,49 @@ import { NotificationService } from '../../services/notification.service';
         <!-- Right Column: Add Dish Form -->
         <mat-card class="form-card">
         <mat-card-header>
-          <mat-card-title>Add New Dish</mat-card-title>
+          <mat-card-title>{{ 'ADD_NEW_DISH' | translate }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <form [formGroup]="form" (ngSubmit)="addDish()" class="dish-form">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Dish Name</mat-label>
+              <mat-label>{{ 'DISH_NAME' | translate }}</mat-label>
               <input matInput formControlName="name" />
               <mat-error *ngIf="form.get('name')?.hasError('required')">
-                Dish name is required
+                {{ 'DISH_NAME_REQUIRED' | translate }}
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Description</mat-label>
+              <mat-label>{{ 'DESCRIPTION' | translate }}</mat-label>
               <textarea matInput formControlName="description" rows="3"></textarea>
               <mat-error *ngIf="form.get('description')?.hasError('required')">
-                Description is required
+                {{ 'DESCRIPTION_REQUIRED' | translate }}
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Price ($)</mat-label>
+              <mat-label>{{ 'PRICE' | translate }}</mat-label>
               <input type="number" matInput formControlName="price" step="0.01" />
               <mat-error *ngIf="form.get('price')?.hasError('required')">
-                Price is required
+                {{ 'PRICE_REQUIRED' | translate }}
               </mat-error>
               <mat-error *ngIf="form.get('price')?.hasError('min')">
-                Price must be greater than 0
+                {{ 'PRICE_MIN' | translate }}
               </mat-error>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Ingredients</mat-label>
+              <mat-label>{{ 'INGREDIENTS' | translate }}</mat-label>
               <textarea matInput formControlName="ingredients" rows="3"
-                placeholder="Format: ingredient name, quantity unit (e.g., 'Tomato sauce 2 cups, Mozzarella 500 g, Basil 10 unit')"></textarea>
+                [placeholder]="'INGREDIENTS_PLACEHOLDER' | translate"></textarea>
               <mat-error *ngIf="form.get('ingredients')?.hasError('required')">
-                Ingredients are required
+                {{ 'INGREDIENTS_REQUIRED' | translate }}
               </mat-error>
             </mat-form-field>
 
             <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
               <mat-icon>add</mat-icon>
-              Add Dish
+              {{ 'ADD_DISH' | translate }}
             </button>
           </form>
         </mat-card-content>
@@ -126,8 +125,8 @@ import { NotificationService } from '../../services/notification.service';
       <mat-card class="search-card">
         <mat-card-content>
           <mat-form-field appearance="outline" class="search-field">
-            <mat-label>Search dishes...</mat-label>
-            <input matInput (input)="onSearch($event)" placeholder="Type to search" />
+            <mat-label>{{ 'SEARCH_DISHES' | translate }}</mat-label>
+            <input matInput (input)="onSearch($event)" [placeholder]="'TYPE_TO_SEARCH' | translate" />
             <mat-icon matSuffix>search</mat-icon>
           </mat-form-field>
         </mat-card-content>
@@ -136,28 +135,28 @@ import { NotificationService } from '../../services/notification.service';
       <!-- Dishes Table -->
       <mat-card class="table-card">
         <mat-card-header>
-          <mat-card-title>Dish List</mat-card-title>
-          <mat-card-subtitle *ngIf="dishes.length === 0">No dishes available. Add your first dish above.</mat-card-subtitle>
+          <mat-card-title>{{ 'DISH_LIST' | translate }}</mat-card-title>
+          <mat-card-subtitle *ngIf="dishes.length === 0">{{ 'NO_DISHES_AVAILABLE' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <table mat-table [dataSource]="dishes" class="mat-elevation-z2" *ngIf="dishes.length > 0">
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'NAME' | translate }}</th>
               <td mat-cell *matCellDef="let dish">{{ dish.name }}</td>
             </ng-container>
 
             <ng-container matColumnDef="description">
-              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DESCRIPTION' | translate }}</th>
               <td mat-cell *matCellDef="let dish">{{ dish.description }}</td>
             </ng-container>
 
             <ng-container matColumnDef="price">
-              <th mat-header-cell *matHeaderCellDef>Price</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'PRICE' | translate }}</th>
               <td mat-cell *matCellDef="let dish">{{ dish.price | currency }}</td>
             </ng-container>
 
             <ng-container matColumnDef="ingredients">
-              <th mat-header-cell *matHeaderCellDef>Ingredients</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'INGREDIENTS' | translate }}</th>
               <td mat-cell *matCellDef="let dish">{{ dish.ingredients }}</td>
             </ng-container>
 
@@ -310,7 +309,8 @@ export class MenuComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private menuService: MenuService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -337,13 +337,14 @@ export class MenuComponent implements OnInit {
       this.menuService.addDish(dishData).subscribe({
         next: (newDish) => {
           console.log('Dish added:', newDish);
-          this.notificationService.success(`Dish "${newDish.name}" added successfully!`);
+          const message = this.translate.instant('DISH_ADDED_SUCCESS', { name: newDish.name });
+          this.notificationService.success(message);
           this.form.reset();
           this.loadDishes(); // Refresh the list
         },
         error: (err) => {
           console.error('Error adding dish', err);
-          this.notificationService.error('Failed to add dish. Please try again.');
+          this.notificationService.error(this.translate.instant('DISH_ADD_FAILED'));
         }
       });
     }

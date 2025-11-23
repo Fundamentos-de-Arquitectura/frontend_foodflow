@@ -2,41 +2,42 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { OrdersService, Order } from '../../services/orders.service';
 import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, TranslateModule],
   template: `
     <div class="orders-container">
-      <h1>Orders Management</h1>
+      <h1>{{ 'ORDERS_MANAGEMENT' | translate }}</h1>
 
       <mat-card>
         <mat-card-header>
-          <mat-card-title>Order History</mat-card-title>
-          <mat-card-subtitle *ngIf="orders.length === 0">No orders found</mat-card-subtitle>
+          <mat-card-title>{{ 'ORDER_HISTORY' | translate }}</mat-card-title>
+          <mat-card-subtitle *ngIf="orders.length === 0">{{ 'NO_ORDERS_FOUND' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <table mat-table [dataSource]="orders" class="mat-elevation-z2" *ngIf="orders.length > 0">
             <ng-container matColumnDef="tableNumber">
-              <th mat-header-cell *matHeaderCellDef>Table</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'TABLE' | translate }}</th>
               <td mat-cell *matCellDef="let order">{{ order.tableNumber }}</td>
             </ng-container>
 
             <ng-container matColumnDef="dishes">
-              <th mat-header-cell *matHeaderCellDef>Dishes</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DISHES' | translate }}</th>
               <td mat-cell *matCellDef="let order">{{ getFormattedDishes(order) }}</td>
             </ng-container>
 
             <ng-container matColumnDef="totalPrice">
-              <th mat-header-cell *matHeaderCellDef>Total Price</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'TOTAL_PRICE' | translate }}</th>
               <td mat-cell *matCellDef="let order">{{ order.totalPrice | currency }}</td>
             </ng-container>
 
             <ng-container matColumnDef="date">
-              <th mat-header-cell *matHeaderCellDef>Date</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DATE' | translate }}</th>
               <td mat-cell *matCellDef="let order">{{ order.date | date:'short' }}</td>
             </ng-container>
 
@@ -69,7 +70,8 @@ export class OrdersComponent implements OnInit {
 
   constructor(
     private ordersService: OrdersService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -81,7 +83,7 @@ export class OrdersComponent implements OnInit {
       next: (data) => {
         this.orders = data;
         if (data.length === 0) {
-          this.notificationService.info('No orders found');
+          this.notificationService.info(this.translate.instant('NO_ORDERS_FOUND_NOTIFICATION'));
         }
       },
       error: (err) => {

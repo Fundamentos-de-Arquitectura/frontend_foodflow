@@ -1,5 +1,5 @@
 <div class="auth-container">
-  <h2>Login to FoodFlow</h2>
+  <h2>{{ 'LOGIN_TITLE' | translate }}</h2>
 
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
@@ -7,31 +7,31 @@
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline">
-      <mat-label>Username</mat-label>
+      <mat-label>{{ 'USERNAME' | translate }}</mat-label>
       <input matInput formControlName="username" type="text" />
       <mat-error *ngIf="form.get('username')?.hasError('required')">
-        Username is required
+        {{ 'USERNAME_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Password</mat-label>
+      <mat-label>{{ 'PASSWORD' | translate }}</mat-label>
       <input matInput formControlName="password" type="password" />
       <mat-error *ngIf="form.get('password')?.hasError('required')">
-        Password is required
+        {{ 'PASSWORD_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || form.invalid">
-      <span *ngIf="!isLoading">Log In</span>
-      <span *ngIf="isLoading">Logging in...</span>
+      <span *ngIf="!isLoading">{{ 'LOG_IN' | translate }}</span>
+      <span *ngIf="isLoading">{{ 'LOGGING_IN' | translate }}</span>
     </button>
   </form>
 
   <p class="link">
-    Don't have an account?
+    {{ 'DONT_HAVE_ACCOUNT' | translate }}
     <button mat-button color="primary" type="button" routerLink="/signup">
-      Sign up
+      {{ 'SIGN_UP' | translate }}
     </button>
   </p>
 </div>

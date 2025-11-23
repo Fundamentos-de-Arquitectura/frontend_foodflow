@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ProfileService, ProfileData } from '../../services/profile.service';
 
 @Component({
@@ -21,7 +22,8 @@ import { ProfileService, ProfileData } from '../../services/profile.service';
     MatIconModule,
     MatDividerModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    TranslateModule
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
@@ -33,7 +35,11 @@ export class ProfileComponent implements OnInit {
 
   profileForm!: FormGroup;
 
-  constructor(private fb: FormBuilder, private profileService: ProfileService) {}
+  constructor(
+    private fb: FormBuilder, 
+    private profileService: ProfileService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.loadProfile();
@@ -89,13 +95,13 @@ export class ProfileComponent implements OnInit {
 
       // Validate password matching if changing password
       if (formValue.newPassword && formValue.newPassword !== formValue.confirmPassword) {
-        alert('New passwords do not match');
+        alert(this.translate.instant('PASSWORDS_NOT_MATCH'));
         return;
       }
 
       // Validate current password if changing password
       if (formValue.newPassword && !formValue.currentPassword) {
-        alert('Please enter your current password to change it');
+        alert(this.translate.instant('ENTER_CURRENT_PASSWORD'));
         return;
       }
 
@@ -103,11 +109,11 @@ export class ProfileComponent implements OnInit {
       console.log('Updating profile:', formValue);
 
       // Simulate successful update
-      alert('Profile updated successfully!');
+      alert(this.translate.instant('PROFILE_UPDATED_SUCCESS'));
       this.isEditing = false;
       this.loadProfile(); // Reload profile data
     } else {
-      alert('Please check your input and try again.');
+      alert(this.translate.instant('CHECK_INPUT'));
     }
   }
 

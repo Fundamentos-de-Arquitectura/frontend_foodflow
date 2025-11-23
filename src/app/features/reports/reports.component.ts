@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ReportsService, ReportData } from '../../services/reports.service';
 
 interface PeriodData {
@@ -17,23 +18,23 @@ interface PeriodData {
 @Component({
   selector: 'app-reports',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTabsModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatTabsModule, MatIconModule, TranslateModule],
   template: `
     <div class="reports-container">
-      <h1>Financial Reports</h1>
+      <h1>{{ 'FINANCIAL_REPORTS' | translate }}</h1>
 
       <div *ngIf="isLoading" class="loading-message">
-        <p>Loading reports...</p>
+        <p>{{ 'LOADING_REPORTS' | translate }}</p>
       </div>
 
       <mat-tab-group *ngIf="!isLoading" [selectedIndex]="selectedTab" (selectedTabChange)="onTabChange($event)">
-        <mat-tab label="Daily">
+        <mat-tab [label]="'DAILY' | translate">
           <ng-container *ngTemplateOutlet="reportContent; context: {data: dailyData}"></ng-container>
         </mat-tab>
-        <mat-tab label="Weekly">
+        <mat-tab [label]="'WEEKLY' | translate">
           <ng-container *ngTemplateOutlet="reportContent; context: {data: weeklyData}"></ng-container>
         </mat-tab>
-        <mat-tab label="Monthly">
+        <mat-tab [label]="'MONTHLY' | translate">
           <ng-container *ngTemplateOutlet="reportContent; context: {data: monthlyData}"></ng-container>
         </mat-tab>
       </mat-tab-group>
@@ -41,16 +42,16 @@ interface PeriodData {
       <ng-template #reportContent let-data="data">
         <div class="report-content" *ngIf="data">
           <div *ngIf="data.income === 0 && data.expenses === 0" class="no-data-message">
-            <p>No data available for this period. Start creating orders and managing inventory to see reports!</p>
+            <p>{{ 'NO_DATA_AVAILABLE' | translate }}</p>
           </div>
           <!-- Income and Expenses Summary -->
           <div class="summary-cards">
             <mat-card class="summary-card income-card">
               <mat-card-header>
-                <mat-card-title>Total Income</mat-card-title>
+                <mat-card-title>{{ 'TOTAL_INCOME' | translate }}</mat-card-title>
                 <mat-card-subtitle>
                   <mat-icon>{{ data.incomeChange >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
-                  {{ data.incomeChange >= 0 ? '+' : '' }}{{ data.incomeChange }}% vs previous {{ data.periodType.toLowerCase() }}
+                  {{ data.incomeChange >= 0 ? '+' : '' }}{{ data.incomeChange }}% {{ getPeriodTranslation(data.periodType) }}
                 </mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
@@ -60,10 +61,10 @@ interface PeriodData {
 
             <mat-card class="summary-card expense-card">
               <mat-card-header>
-                <mat-card-title>Total Expenses</mat-card-title>
+                <mat-card-title>{{ 'TOTAL_EXPENSES' | translate }}</mat-card-title>
                 <mat-card-subtitle>
                   <mat-icon>{{ data.expensesChange >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
-                  {{ data.expensesChange >= 0 ? '+' : '' }}{{ data.expensesChange }}% vs previous {{ data.periodType.toLowerCase() }}
+                  {{ data.expensesChange >= 0 ? '+' : '' }}{{ data.expensesChange }}% {{ getPeriodTranslation(data.periodType) }}
                 </mat-card-subtitle>
               </mat-card-header>
               <mat-card-content>
@@ -75,8 +76,8 @@ interface PeriodData {
           <!-- Expenses Breakdown -->
           <mat-card class="breakdown-card">
             <mat-card-header>
-              <mat-card-title>Expenses by Category</mat-card-title>
-              <mat-card-subtitle>Breakdown of spending areas</mat-card-subtitle>
+              <mat-card-title>{{ 'EXPENSES_BY_CATEGORY' | translate }}</mat-card-title>
+              <mat-card-subtitle>{{ 'BREAKDOWN_SPENDING' | translate }}</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
               <div class="category-list">
@@ -197,7 +198,10 @@ export class ReportsComponent implements OnInit {
   weeklyData: PeriodData | null = null;
   monthlyData: PeriodData | null = null;
 
-  constructor(private reportsService: ReportsService) {}
+  constructor(
+    private reportsService: ReportsService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.loadAllReports();
@@ -245,5 +249,15 @@ export class ReportsComponent implements OnInit {
 
   trackByCategory(index: number, item: { category: string; amount: number }): string {
     return item.category;
+  }
+
+  getPeriodTranslation(periodType: string): string {
+    const periodMap: { [key: string]: string } = {
+      'day': this.translate.instant('DAILY').toLowerCase(),
+      'week': this.translate.instant('WEEKLY').toLowerCase(),
+      'month': this.translate.instant('MONTHLY').toLowerCase()
+    };
+    const period = periodMap[periodType.toLowerCase()] || periodType.toLowerCase();
+    return this.translate.instant('VS_PREVIOUS', { period });
   }
 }

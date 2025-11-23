@@ -1,11 +1,11 @@
 <div  class="profile-header">
-  <h1>Profile Settings</h1>
+  <h1>{{ 'PROFILE_SETTINGS' | translate }}</h1>
 </div>
 
 <div class="profile-container">
 
   <div *ngIf="isLoading">
-    <p>Loading profile...</p>
+    <p>{{ 'LOADING_PROFILE' | translate }}</p>
   </div>
 
   <mat-card *ngIf="!isLoading && profile">
@@ -20,77 +20,77 @@
     <mat-card-content>
       <div *ngIf="!isEditing">
         <!-- Display Mode -->
-        <h3>Personal Information</h3>
-        <p><strong>Full Name:</strong> {{ profile.fullName }}</p>
-        <p><strong>Email:</strong> {{ profile.email }}</p>
-        <p><strong>Address:</strong> {{ profile.streetAddress }}</p>
+        <h3>{{ 'PERSONAL_INFORMATION' | translate }}</h3>
+        <p><strong>{{ 'FULL_NAME' | translate }}:</strong> {{ profile.fullName }}</p>
+        <p><strong>{{ 'EMAIL' | translate }}:</strong> {{ profile.email }}</p>
+        <p><strong>{{ 'ADDRESS_FIELD' | translate }}:</strong> {{ profile.streetAddress }}</p>
 
         <mat-divider style="margin: 20px 0;"></mat-divider>
 
-        <h3>Restaurant Information</h3>
-        <p><strong>Restaurant Name:</strong> {{ profile.restaurantName }}</p>
-        <p><strong>Description:</strong> {{ profile.restaurantDescription || 'Not provided' }}</p>
-        <p><strong>Phone:</strong> {{ profile.restaurantPhone || 'Not provided' }}</p>
+        <h3>{{ 'RESTAURANT_INFORMATION' | translate }}</h3>
+        <p><strong>{{ 'RESTAURANT_NAME' | translate }}:</strong> {{ profile.restaurantName }}</p>
+        <p><strong>{{ 'DESCRIPTION' | translate }}:</strong> {{ profile.restaurantDescription || ('NOT_PROVIDED' | translate) }}</p>
+        <p><strong>{{ 'PHONE' | translate }}:</strong> {{ profile.restaurantPhone || ('NOT_PROVIDED' | translate) }}</p>
       </div>
 
       <div *ngIf="isEditing">
         <!-- Edit Mode -->
         <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="profile-form">
-          <h3>Personal Information</h3>
+          <h3>{{ 'PERSONAL_INFORMATION' | translate }}</h3>
           <mat-form-field appearance="outline">
-            <mat-label>Full Name</mat-label>
+            <mat-label>{{ 'FULL_NAME' | translate }}</mat-label>
             <input matInput formControlName="fullName" />
             <mat-error *ngIf="profileForm.get('fullName')?.hasError('required')">
-              Full name is required
+              {{ 'FULL_NAME_REQUIRED' | translate }}
             </mat-error>
             <mat-error *ngIf="profileForm.get('fullName')?.hasError('minlength')">
-              Name must be at least 2 characters
+              {{ 'FULL_NAME_MIN_LENGTH' | translate }}
             </mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Email</mat-label>
+            <mat-label>{{ 'EMAIL' | translate }}</mat-label>
             <input matInput formControlName="email" type="email" />
             <mat-error *ngIf="profileForm.get('email')?.hasError('required')">
-              Email is required
+              {{ 'EMAIL_REQUIRED' | translate }}
             </mat-error>
             <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
-              Please enter a valid email
+              {{ 'EMAIL_INVALID' | translate }}
             </mat-error>
           </mat-form-field>
 
-          <h3>Restaurant Information</h3>
+          <h3>{{ 'RESTAURANT_INFORMATION' | translate }}</h3>
           <mat-form-field appearance="outline">
-            <mat-label>Restaurant Name</mat-label>
+            <mat-label>{{ 'RESTAURANT_NAME' | translate }}</mat-label>
             <input matInput formControlName="restaurantName" />
             <mat-error *ngIf="profileForm.get('restaurantName')?.hasError('required')">
-              Restaurant name is required
+              {{ 'RESTAURANT_NAME_REQUIRED' | translate }}
             </mat-error>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Restaurant Description</mat-label>
+            <mat-label>{{ 'RESTAURANT_DESCRIPTION' | translate }}</mat-label>
             <textarea matInput formControlName="restaurantDescription" rows="3"></textarea>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Restaurant Phone</mat-label>
+            <mat-label>{{ 'RESTAURANT_PHONE' | translate }}</mat-label>
             <input matInput formControlName="restaurantPhone" />
           </mat-form-field>
 
-          <h4>Change Password (optional)</h4>
+          <h4>{{ 'CHANGE_PASSWORD' | translate }}</h4>
           <mat-form-field appearance="outline">
-            <mat-label>Current Password</mat-label>
+            <mat-label>{{ 'CURRENT_PASSWORD' | translate }}</mat-label>
             <input matInput formControlName="currentPassword" type="password" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>New Password</mat-label>
+            <mat-label>{{ 'NEW_PASSWORD' | translate }}</mat-label>
             <input matInput formControlName="newPassword" type="password" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Confirm New Password</mat-label>
+            <mat-label>{{ 'CONFIRM_NEW_PASSWORD' | translate }}</mat-label>
             <input matInput formControlName="confirmPassword" type="password" />
           </mat-form-field>
         </form>
@@ -98,13 +98,18 @@
     </mat-card-content>
 
     <mat-card-actions>
+      <div *ngIf="!isEditing">
+        <button mat-raised-button color="primary" (click)="toggleEdit()">
+          {{ 'EDIT' | translate }}
+        </button>
+      </div>
 
       <div *ngIf="isEditing">
         <button mat-button (click)="cancelEdit()">
-          Cancel
+          {{ 'CANCEL' | translate }}
         </button>
         <button mat-raised-button color="primary" (click)="updateProfile()">
-          Save Changes
+          {{ 'SAVE_CHANGES' | translate }}
         </button>
       </div>
     </mat-card-actions>

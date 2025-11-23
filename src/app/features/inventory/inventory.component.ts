@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProductService, Product } from '../../services/product.service';
 import { StockAlertService, StockAlert } from '../../services/stock-alert.service';
 
@@ -25,6 +26,7 @@ import { StockAlertService, StockAlert } from '../../services/stock-alert.servic
     MatButtonModule,
     MatCardModule,
     MatIconModule,
+    TranslateModule,
   ],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.css']

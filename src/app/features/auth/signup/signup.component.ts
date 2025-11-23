@@ -5,6 +5,7 @@ import { Router, RouterModule } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProfileService, CreateProfileRequest } from '../../../services/profile.service';
 import { forkJoin } from 'rxjs';
@@ -19,7 +20,8 @@ import { switchMap } from 'rxjs/operators';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    RouterModule
+    RouterModule,
+    TranslateModule
   ],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.css']
@@ -33,7 +35,8 @@ export class SignupComponent {
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private translate: TranslateService
   ) {
     this.form = this.fb.group({
       username: ['', Validators.required],
@@ -62,7 +65,7 @@ export class SignupComponent {
       const formValue = this.form.getRawValue();
       
       if (formValue.password !== formValue.confirmPassword) {
-        this.errorMessage = 'Passwords do not match';
+        this.errorMessage = this.translate.instant('PASSWORDS_DONT_MATCH');
         return;
       }
 
@@ -104,17 +107,17 @@ export class SignupComponent {
           console.log('Profile created successfully:', profileResponse);
           this.isLoading = false;
           // After successful signup and profile creation, redirect to login
-          alert('Account and restaurant profile created successfully! Please log in.');
+          alert(this.translate.instant('ACCOUNT_CREATED_SUCCESS'));
           this.router.navigate(['/login']);
         },
         error: (error) => {
           console.error('Signup or profile creation error:', error);
           this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Registration failed. Please try again.';
+          this.errorMessage = error.error?.message || this.translate.instant('REGISTRATION_FAILED');
         }
       });
     } else {
-      this.errorMessage = 'Please fill in all required fields correctly.';
+      this.errorMessage = this.translate.instant('FILL_REQUIRED_FIELDS');
     }
   }
 }

@@ -4,6 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ReportsService, DashboardData } from '../../services/reports.service';
 import { StockAlertService, StockAlert } from '../../services/stock-alert.service';
 import { NotificationService } from '../../services/notification.service';
@@ -23,13 +24,13 @@ interface TopDish {
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule, MatSnackBarModule],
+  imports: [CommonModule, MatCardModule, MatTableModule, MatIconModule, MatSnackBarModule, TranslateModule],
   template: `
     <div class="dashboard-container">
-      <h1>Dashboard</h1>
+      <h1>{{ 'DASHBOARD' | translate }}</h1>
 
       <div *ngIf="isLoading" class="loading-message">
-        <p>Loading dashboard...</p>
+        <p>{{ 'LOADING_DASHBOARD' | translate }}</p>
       </div>
 
       <div *ngIf="!isLoading">
@@ -41,9 +42,9 @@ interface TopDish {
               <div class="alert-content">
                 <mat-icon class="alert-icon">{{ getAlertIcon(alert.severity) }}</mat-icon>
                 <div class="alert-message">
-                  <strong>{{ alert.ingredientName }}</strong>: Insufficient stock!
-                  Required: {{ alert.requiredQuantity }}, Available: {{ alert.availableQuantity }}, 
-                  Shortage: {{ alert.shortage }}
+                  <strong>{{ alert.ingredientName }}</strong>: {{ 'INSUFFICIENT_STOCK' | translate }}
+                  {{ 'REQUIRED' | translate }}: {{ alert.requiredQuantity }}, {{ 'AVAILABLE' | translate }}: {{ alert.availableQuantity }}, 
+                  {{ 'SHORTAGE' | translate }}: {{ alert.shortage }}
                 </div>
               </div>
             </mat-card-content>
@@ -54,10 +55,10 @@ interface TopDish {
         <div class="summary-cards">
         <mat-card class="summary-card income-card">
           <mat-card-header>
-            <mat-card-title>Total Income</mat-card-title>
+            <mat-card-title>{{ 'TOTAL_INCOME' | translate }}</mat-card-title>
             <mat-card-subtitle>
               <mat-icon>{{ summaryData.incomeChange >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ summaryData.incomeChange >= 0 ? '+' : '' }}{{ summaryData.incomeChange }}% vs yesterday
+              {{ summaryData.incomeChange >= 0 ? '+' : '' }}{{ summaryData.incomeChange }}% {{ 'VS_YESTERDAY' | translate }}
             </mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
@@ -67,10 +68,10 @@ interface TopDish {
 
         <mat-card class="summary-card expense-card">
           <mat-card-header>
-            <mat-card-title>Total Expenses</mat-card-title>
+            <mat-card-title>{{ 'TOTAL_EXPENSES' | translate }}</mat-card-title>
             <mat-card-subtitle>
               <mat-icon>{{ summaryData.expensesChange >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
-              {{ summaryData.expensesChange >= 0 ? '+' : '' }}{{ summaryData.expensesChange }}% vs yesterday
+              {{ summaryData.expensesChange >= 0 ? '+' : '' }}{{ summaryData.expensesChange }}% {{ 'VS_YESTERDAY' | translate }}
             </mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
@@ -82,25 +83,25 @@ interface TopDish {
         <!-- Top Dishes -->
         <mat-card class="top-dishes-card">
           <mat-card-header>
-            <mat-card-title>Top 5 Dishes</mat-card-title>
+            <mat-card-title>{{ 'TOP_5_DISHES' | translate }}</mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div *ngIf="topDishes.length === 0" class="no-data-message">
-              <p>No dishes sold yet. Create orders to see top dishes!</p>
+              <p>{{ 'NO_DISHES_SOLD' | translate }}</p>
             </div>
             <table *ngIf="topDishes.length > 0" mat-table [dataSource]="topDishes" class="top-dishes-table">
             <ng-container matColumnDef="name">
-              <th mat-header-cell *matHeaderCellDef>Dish Name</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'DISH_NAME' | translate }}</th>
               <td mat-cell *matCellDef="let dish">{{ dish.name }}</td>
             </ng-container>
 
             <ng-container matColumnDef="sales">
-              <th mat-header-cell *matHeaderCellDef>Sales</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'SALES' | translate }}</th>
               <td mat-cell *matCellDef="let dish">{{ dish.sales }}</td>
             </ng-container>
 
             <ng-container matColumnDef="chart">
-              <th mat-header-cell *matHeaderCellDef>Chart</th>
+              <th mat-header-cell *matHeaderCellDef>{{ 'CHART' | translate }}</th>
               <td mat-cell *matCellDef="let dish">
                 <div class="chart-bar" [style.width.%]="(dish.sales / maxSales) * 100"></div>
               </td>
@@ -241,7 +242,8 @@ export class DashboardComponent implements OnInit {
   constructor(
     private reportsService: ReportsService,
     private stockAlertService: StockAlertService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -283,12 +285,13 @@ export class DashboardComponent implements OnInit {
           // Show notification for critical alerts
           const criticalAlerts = alerts.filter(a => a.severity === 'critical');
           if (criticalAlerts.length > 0) {
-            const message = `⚠️ URGENT: ${criticalAlerts.length} ingredient(s) out of stock!`;
+            const message = this.translate.instant('URGENT_STOCK_ALERT', { count: criticalAlerts.length });
             this.notificationService.warning(message, 8000);
           } else {
             const warningAlerts = alerts.filter(a => a.severity === 'warning');
             if (warningAlerts.length > 0) {
-              this.notificationService.warning(`⚠️ ${warningAlerts.length} ingredient(s) have low stock`, 6000);
+              const message = this.translate.instant('LOW_STOCK_ALERT', { count: warningAlerts.length });
+              this.notificationService.warning(message, 6000);
             }
           }
         }

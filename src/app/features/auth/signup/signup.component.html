@@ -1,145 +1,145 @@
 <div class="auth-container">
-  <h2>Create your FoodFlow account</h2>
+  <h2>{{ 'SIGNUP_TITLE' | translate }}</h2>
 
   <div *ngIf="errorMessage" class="error-message">
     {{ errorMessage }}
   </div>
 
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <h3>Account Credentials</h3>
+    <h3>{{ 'ACCOUNT_CREDENTIALS' | translate }}</h3>
     <mat-form-field appearance="outline">
-      <mat-label>Username</mat-label>
+      <mat-label>{{ 'USERNAME' | translate }}</mat-label>
       <input matInput formControlName="username" type="text" />
       <mat-error *ngIf="form.get('username')?.hasError('required')">
-        Username is required
+        {{ 'USERNAME_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Password</mat-label>
+      <mat-label>{{ 'PASSWORD' | translate }}</mat-label>
       <input matInput formControlName="password" type="password" />
       <mat-error *ngIf="form.get('password')?.hasError('required')">
-        Password is required
+        {{ 'PASSWORD_REQUIRED' | translate }}
       </mat-error>
       <mat-error *ngIf="form.get('password')?.hasError('minlength')">
-        Password must be at least 6 characters
+        {{ 'PASSWORD_MIN_LENGTH' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Confirm Password</mat-label>
+      <mat-label>{{ 'CONFIRM_PASSWORD' | translate }}</mat-label>
       <input matInput formControlName="confirmPassword" type="password" />
       <mat-error *ngIf="form.get('confirmPassword')?.hasError('required')">
-        Please confirm your password
+        {{ 'CONFIRM_PASSWORD_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
-    <h3>Personal Information</h3>
+    <h3>{{ 'PERSONAL_INFORMATION' | translate }}</h3>
     <mat-form-field appearance="outline">
-      <mat-label>First Name</mat-label>
+      <mat-label>{{ 'FIRST_NAME' | translate }}</mat-label>
       <input matInput formControlName="firstName" type="text" />
       <mat-error *ngIf="form.get('firstName')?.hasError('required')">
-        First name is required
+        {{ 'FIRST_NAME_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Last Name</mat-label>
+      <mat-label>{{ 'LAST_NAME' | translate }}</mat-label>
       <input matInput formControlName="lastName" type="text" />
       <mat-error *ngIf="form.get('lastName')?.hasError('required')">
-        Last name is required
+        {{ 'LAST_NAME_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Email</mat-label>
+      <mat-label>{{ 'EMAIL' | translate }}</mat-label>
       <input matInput formControlName="email" type="email" />
       <mat-error *ngIf="form.get('email')?.hasError('required')">
-        Email is required
+        {{ 'EMAIL_REQUIRED' | translate }}
       </mat-error>
       <mat-error *ngIf="form.get('email')?.hasError('email')">
-        Please enter a valid email
+        {{ 'EMAIL_INVALID' | translate }}
       </mat-error>
     </mat-form-field>
 
-    <h3>Address</h3>
+    <h3>{{ 'ADDRESS' | translate }}</h3>
     <mat-form-field appearance="outline">
-      <mat-label>Street</mat-label>
+      <mat-label>{{ 'STREET' | translate }}</mat-label>
       <input matInput formControlName="street" type="text" />
       <mat-error *ngIf="form.get('street')?.hasError('required')">
-        Street is required
+        {{ 'STREET_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Number</mat-label>
+      <mat-label>{{ 'NUMBER' | translate }}</mat-label>
       <input matInput formControlName="number" type="text" />
       <mat-error *ngIf="form.get('number')?.hasError('required')">
-        Number is required
+        {{ 'NUMBER_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>City</mat-label>
+      <mat-label>{{ 'CITY' | translate }}</mat-label>
       <input matInput formControlName="city" type="text" />
       <mat-error *ngIf="form.get('city')?.hasError('required')">
-        City is required
+        {{ 'CITY_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>State</mat-label>
+      <mat-label>{{ 'STATE' | translate }}</mat-label>
       <input matInput formControlName="state" type="text" />
       <mat-error *ngIf="form.get('state')?.hasError('required')">
-        State is required
+        {{ 'STATE_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Postal Code</mat-label>
+      <mat-label>{{ 'POSTAL_CODE' | translate }}</mat-label>
       <input matInput formControlName="postalCode" type="text" />
       <mat-error *ngIf="form.get('postalCode')?.hasError('required')">
-        Postal code is required
+        {{ 'POSTAL_CODE_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Country</mat-label>
+      <mat-label>{{ 'COUNTRY' | translate }}</mat-label>
       <input matInput formControlName="country" type="text" />
       <mat-error *ngIf="form.get('country')?.hasError('required')">
-        Country is required
+        {{ 'COUNTRY_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
-    <h3>Restaurant Information</h3>
+    <h3>{{ 'RESTAURANT_INFORMATION' | translate }}</h3>
     <mat-form-field appearance="outline">
-      <mat-label>Restaurant Name</mat-label>
+      <mat-label>{{ 'RESTAURANT_NAME' | translate }}</mat-label>
       <input matInput formControlName="restaurantName" type="text" />
       <mat-error *ngIf="form.get('restaurantName')?.hasError('required')">
-        Restaurant name is required
+        {{ 'RESTAURANT_NAME_REQUIRED' | translate }}
       </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Restaurant Description (optional)</mat-label>
+      <mat-label>{{ 'RESTAURANT_DESCRIPTION' | translate }}</mat-label>
       <textarea matInput formControlName="restaurantDescription" rows="3"></textarea>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
-      <mat-label>Restaurant Phone (optional)</mat-label>
+      <mat-label>{{ 'RESTAURANT_PHONE' | translate }}</mat-label>
       <input matInput formControlName="restaurantPhone" type="tel" />
     </mat-form-field>
 
     <button mat-raised-button color="primary" type="submit" [disabled]="isLoading || form.invalid">
-      <span *ngIf="!isLoading">Sign Up</span>
-      <span *ngIf="isLoading">Creating account...</span>
+      <span *ngIf="!isLoading">{{ 'SIGN_UP' | translate }}</span>
+      <span *ngIf="isLoading">{{ 'CREATING_ACCOUNT' | translate }}</span>
     </button>
   </form>
 
   <p class="link">
-    Already have an account?
+    {{ 'ALREADY_HAVE_ACCOUNT' | translate }}
     <button mat-button color="primary" type="button" routerLink="/login">
-      Back to Login
+      {{ 'BACK_TO_LOGIN' | translate }}
     </button>
   </p>
 </div>
