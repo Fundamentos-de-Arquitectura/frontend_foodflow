@@ -23,7 +23,7 @@ export class StockAlertService {
     private ordersService: OrdersService,
     private productService: ProductService,
     private menuService: MenuService
-  ) {}
+  ) { }
 
   /**
    * Check stock availability against all existing orders
@@ -36,7 +36,7 @@ export class StockAlertService {
     }
 
     // Fetch backend dishes directly to get ingredients array
-    const dishesUrl = 'http://localhost:8060/api/v1/menu';
+    const dishesUrl = '/api/v1/menu';
     const backendDishes$ = this.http.get<BackendDish[]>(`${dishesUrl}/users/${userId}/dishes`).pipe(
       catchError(() => of([]))
     );
@@ -56,7 +56,7 @@ export class StockAlertService {
 
         // Calculate required ingredients from all orders
         const requiredIngredients = new Map<string, number>();
-        
+
         orders.forEach(order => {
           if (order.items && Array.isArray(order.items)) {
             order.items.forEach((item: any) => {
@@ -77,14 +77,14 @@ export class StockAlertService {
 
         // Compare required vs available and generate alerts
         const alerts: StockAlert[] = [];
-        
+
         requiredIngredients.forEach((required, ingredientName) => {
           const available = inventoryMap.get(ingredientName) || 0;
-          
+
           if (available < required) {
             const shortage = required - available;
             let severity: 'critical' | 'warning' | 'low';
-            
+
             if (available === 0) {
               severity = 'critical';
             } else if (available < required * 0.5) {
@@ -92,12 +92,12 @@ export class StockAlertService {
             } else {
               severity = 'low';
             }
-            
+
             // Find the original ingredient name (case-sensitive) from inventory or dishes
-            let originalName = products.find(p => 
+            let originalName = products.find(p =>
               p.name.toLowerCase() === ingredientName
             )?.name;
-            
+
             if (!originalName) {
               // Try to find in dishes ingredients
               const dishIngredient = dishes
@@ -105,7 +105,7 @@ export class StockAlertService {
                 .find(ing => ing.name.toLowerCase() === ingredientName);
               originalName = dishIngredient?.name || ingredientName.charAt(0).toUpperCase() + ingredientName.slice(1);
             }
-            
+
             alerts.push({
               ingredientName: originalName,
               requiredQuantity: Math.ceil(required),
@@ -129,20 +129,20 @@ export class StockAlertService {
    * Parse ingredients string to extract name, quantity, and unit
    * Format: "IngredientName quantity unit" or "IngredientName (quantity unit)"
    */
-  private parseIngredients(ingredientsStr: string): Array<{name: string, quantity: number, unit: string}> {
+  private parseIngredients(ingredientsStr: string): Array<{ name: string, quantity: number, unit: string }> {
     if (!ingredientsStr) {
       return [];
     }
 
     // Split by comma if it's a comma-separated list
     const parts = ingredientsStr.split(',').map(s => s.trim());
-    
+
     return parts.map(part => {
       // Try multiple patterns
       // Pattern 1: "Name quantity unit" (e.g., "Pollo 1 unit")
       // Pattern 2: "Name (quantity unit)" (e.g., "Pollo (1 unit)")
       // Pattern 3: "Name quantity unit (quantity unit)" - extract from parentheses
-      
+
       let match = part.match(/(.+?)\s+(\d+(?:\.\d+)?)\s+(\w+)\s*\(/);
       if (match) {
         return {
@@ -151,7 +151,7 @@ export class StockAlertService {
           unit: match[3].trim()
         };
       }
-      
+
       match = part.match(/(.+?)\s+(\d+(?:\.\d+)?)\s+(\w+)/);
       if (match) {
         return {
@@ -160,7 +160,7 @@ export class StockAlertService {
           unit: match[3].trim()
         };
       }
-      
+
       match = part.match(/(.+?)\s*\((\d+(?:\.\d+)?)\s+(\w+)\)/);
       if (match) {
         return {
@@ -169,7 +169,7 @@ export class StockAlertService {
           unit: match[3].trim()
         };
       }
-      
+
       // Default: treat as name with quantity 1
       return {
         name: part.trim(),

@@ -27,10 +27,10 @@ export interface Product {
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private apiUrl = 'http://localhost:8060/api/v1/products'; // API Gateway routes to inventory service
+  private apiUrl = '/api/v1/products'; // Proxy handles routing
   private unitMap = new Map<string, string>(); // Store units by product name
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   private getUserId(): number {
     const userId = localStorage.getItem('userId');
@@ -59,7 +59,7 @@ export class ProductService {
     const expirationDate = new Date();
     expirationDate.setFullYear(expirationDate.getFullYear() + 1);
     const expirationDateString = expirationDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    
+
     const backendProduct = {
       name: product.name,
       productItemId: product.id ? product.id : null,

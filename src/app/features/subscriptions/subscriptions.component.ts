@@ -50,7 +50,7 @@ export class SubscriptionsComponent implements OnInit {
     }
   ];
 
-  constructor(private dialog: MatDialog, private translate: TranslateService, private http: HttpClient) {}
+  constructor(private dialog: MatDialog, private translate: TranslateService, private http: HttpClient) { }
 
   ngOnInit(): void {
     this.loadUserSubscription();
@@ -63,22 +63,24 @@ export class SubscriptionsComponent implements OnInit {
       this.isLoading = false;
       return;
     }
-    
+
     const userId = parseInt(userIdStr, 10);
-    
-    // Fetch user with subscription data from profiles service
-    this.http.get<any>(`http://localhost:8060/api/v1/profiles/users/${userId}/with-subscription`).subscribe({
-      next: (data) => {
-        this.userSubscription = data;
-        // Set current plan based on subscription data
-        if (data.planName) {
-          this.currentPlan = data.planName === 'PREMIUM' ? 'PREMIUM_PLAN' : 'BASIC_PLAN';
+
+    // Try to fetch subscription directly
+    this.http.get<any>(`/api/v1/subscriptions/${userId}`).subscribe({
+      next: (subscription) => {
+        this.userSubscription = subscription;
+        if (subscription && subscription.status === 'ACTIVE') {
+          this.currentPlan = 'PREMIUM_PLAN';
+        } else {
+          this.currentPlan = 'BASIC_PLAN';
         }
         this.updatePlanStatus();
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Error loading subscription', err);
+        this.currentPlan = 'BASIC_PLAN';
         this.isLoading = false;
         this.updatePlanStatus();
       }
@@ -96,29 +98,108 @@ export class SubscriptionsComponent implements OnInit {
   }
 
   private upgradeToPremium(): void {
-    // TODO: Implement actual subscription upgrade API call
     const confirmMessage = this.translate.instant('CONFIRM_PREMIUM_UPGRADE');
     const confirmed = confirm(confirmMessage);
     if (confirmed) {
-      // For now, just update the UI (later this should call the subscription API)
-      this.currentPlan = 'PREMIUM_PLAN';
-      this.updatePlanStatus();
-      const successMessage = this.translate.instant('UPGRADE_SUCCESS');
-      alert(successMessage);
-      this.loadUserSubscription(); // Reload subscription data
+      const userIdStr = localStorage.getItem('userId');
+      if (!userIdStr) {
+        alert('Error: User ID not found');
+        return;
+      }
+
+      const userId = parseInt(userIdStr, 10);
+
+      // Prepare subscription request with payment data
+      const subscriptionRequest = {
+        planName: 'PREMIUM',
+        paymentData: {
+          cardNumber: '4111111111111111', // Mock data
+          cardHolder: 'User Name',
+          expirationDate: '12/25',
+          cvv: '123',
+          amount: 9.99
+        }
+      };
+
+      this.isLoading = true;
+
+      // Call subscription API
+      this.http.post<any>(`/api/v1/subscriptions/subscribe/${userId}`, subscriptionRequest).subscribe({
+        next: (subscription) => {
+          console.log('Subscription created:', subscription);
+
+          // Update subscriptionId in IAM account
+          this.http.patch(`/api/v1/authentication/accounts/${userId}/subscription`, {
+            subscriptionId: subscription.id
+          }).subscribe({
+            next: () => {
+              console.log('SubscriptionId updated in IAM');
+              this.currentPlan = 'PREMIUM_PLAN';
+              this.updatePlanStatus();
+              const successMessage = this.translate.instant('UPGRADE_SUCCESS');
+              alert(successMessage);
+              this.isLoading = false;
+            },
+            error: (err) => {
+              console.error('Error updating subscriptionId in IAM:', err);
+              alert('Suscripción creada pero hubo un error al actualizar tu cuenta. Por favor contacta soporte.');
+              this.isLoading = false;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error upgrading to premium:', err);
+          alert('Error al actualizar a Premium. Por favor intenta de nuevo.');
+          this.isLoading = false;
+        }
+      });
     }
   }
 
   cancelPremium(): void {
-    // TODO: Implement actual subscription cancellation API call
     const confirmMessage = this.translate.instant('CONFIRM_CANCEL');
     const confirmed = confirm(confirmMessage);
     if (confirmed) {
-      this.currentPlan = 'BASIC_PLAN';
-      this.updatePlanStatus();
-      const successMessage = this.translate.instant('CANCEL_SUCCESS');
-      alert(successMessage);
-      this.loadUserSubscription(); // Reload subscription data
+      const userIdStr = localStorage.getItem('userId');
+      if (!userIdStr) {
+        alert('Error: User ID not found');
+        return;
+      }
+
+      const userId = parseInt(userIdStr, 10);
+      this.isLoading = true;
+
+      // Call cancel subscription API
+      this.http.delete(`/api/v1/subscriptions/cancel/${userId}`, { responseType: 'text' }).subscribe({
+        next: (response) => {
+          console.log('Subscription cancelled:', response);
+
+          // Update subscriptionId in IAM to null
+          this.http.patch(`/api/v1/authentication/accounts/${userId}/subscription`, {
+            subscriptionId: null
+          }).subscribe({
+            next: () => {
+              console.log('SubscriptionId removed from IAM');
+              this.currentPlan = 'BASIC_PLAN';
+              this.updatePlanStatus();
+              const successMessage = this.translate.instant('CANCEL_SUCCESS');
+              alert(successMessage);
+              this.isLoading = false;
+            },
+            error: (err) => {
+              console.error('Error removing subscriptionId from IAM:', err);
+              this.currentPlan = 'BASIC_PLAN';
+              this.updatePlanStatus();
+              this.isLoading = false;
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error cancelling subscription:', err);
+          alert('Error al cancelar la suscripción. Por favor intenta de nuevo.');
+          this.isLoading = false;
+        }
+      });
     }
   }
 

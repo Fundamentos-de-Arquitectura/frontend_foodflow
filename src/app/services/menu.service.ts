@@ -31,9 +31,9 @@ export interface Dish {
   providedIn: 'root'
 })
 export class MenuService {
-  private apiUrl = 'http://localhost:8060/api/v1/menu'; // API Gateway routes to menu service
+  private apiUrl = '/api/v1/menu'; // Proxy handles routing
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getDishes(): Observable<Dish[]> {
     // Get userId from localStorage to fetch only user's dishes
@@ -42,7 +42,7 @@ export class MenuService {
       throw new Error('User ID not found. Please log in again.');
     }
     const userId = parseInt(userIdStr, 10);
-    
+
     // Fetch only dishes created by this user
     return this.http.get<BackendDish[]>(`${this.apiUrl}/users/${userId}/dishes`).pipe(
       map(dishes => dishes.map(d => this.mapBackendToFrontend(d)))
@@ -56,17 +56,17 @@ export class MenuService {
       throw new Error('User ID not found. Please log in again.');
     }
     const userId = parseInt(userIdStr, 10);
-    
+
     // Parse ingredients string to array format expected by backend
     const ingredients = this.parseIngredientsString(dish.ingredients);
-    
+
     const backendDish = {
       name: dish.name,
       description: dish.description,
       price: dish.price,
       ingredients: ingredients
     };
-    
+
     return this.http.post<BackendDish>(`${this.apiUrl}/users/${userId}/dishes`, backendDish).pipe(
       map(d => this.mapBackendToFrontend(d))
     );
@@ -88,13 +88,13 @@ export class MenuService {
       name: backend.name,
       description: backend.description,
       price: Number(backend.price),
-      ingredients: backend.ingredients.map(ing => 
+      ingredients: backend.ingredients.map(ing =>
         `${ing.name} (${ing.quantity} ${ing.unit})`
       ).join(', ')
     };
   }
 
-  private parseIngredientsString(ingredientsStr: string): Array<{name: string, quantity: number, unit: string}> {
+  private parseIngredientsString(ingredientsStr: string): Array<{ name: string, quantity: number, unit: string }> {
     // Simple parser - assumes format like "Tomato sauce, mozzarella, basil"
     // For a more robust solution, you might want to enhance this
     // For now, we'll create a simple mapping

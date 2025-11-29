@@ -33,9 +33,9 @@ export interface CreateProfileRequest {
   providedIn: 'root'
 })
 export class ProfileService {
-  private apiUrl = 'http://localhost:8060/api/v1/profiles'; // API Gateway routes to profiles service
+  private apiUrl = '/api/v1/profiles'; // Proxy handles routing
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getProfileByAccountId(accountId: number): Observable<ProfileData> {
     return this.http.get<ProfileData>(`${this.apiUrl}/account/${accountId}`);

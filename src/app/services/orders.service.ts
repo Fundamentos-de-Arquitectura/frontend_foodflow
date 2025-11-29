@@ -49,9 +49,9 @@ export interface Order {
   providedIn: 'root'
 })
 export class OrdersService {
-  private apiUrl = 'http://localhost:8060/api/v1/orders'; // API Gateway routes to orders service
+  private apiUrl = '/api/v1/orders'; // Proxy handles routing
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getOrders(): Observable<Order[]> {
     const userIdStr = localStorage.getItem('userId');
@@ -116,7 +116,7 @@ export class OrdersService {
    */
   extractErrorMessage(error: any): string {
     let errorMessage = '';
-    
+
     if (error.error?.error) {
       errorMessage = error.error.error;
     } else if (error.error?.message) {
@@ -128,13 +128,13 @@ export class OrdersService {
     }
 
     // Check for stock-related errors and format them nicely
-    if (errorMessage.toLowerCase().includes('inventory') || 
-        errorMessage.toLowerCase().includes('stock') ||
-        errorMessage.toLowerCase().includes('ingredient')) {
-      
+    if (errorMessage.toLowerCase().includes('inventory') ||
+      errorMessage.toLowerCase().includes('stock') ||
+      errorMessage.toLowerCase().includes('ingredient')) {
+
       // Check for "no stock" errors
-      if (errorMessage.toLowerCase().includes('no ') || 
-          errorMessage.toLowerCase().includes('has no')) {
+      if (errorMessage.toLowerCase().includes('no ') ||
+        errorMessage.toLowerCase().includes('has no')) {
         // Extract ingredient name if possible
         const match = errorMessage.match(/has no ([\w\s]+)|no ([\w\s]+)/i);
         if (match) {
@@ -143,11 +143,11 @@ export class OrdersService {
         }
         return `⚠️ URGENT: One or more ingredients are OUT OF STOCK and must be purchased immediately.`;
       }
-      
+
       // Check for "not enough" errors
       if (errorMessage.toLowerCase().includes("doesn't have enough") ||
-          errorMessage.toLowerCase().includes('not enough') ||
-          errorMessage.toLowerCase().includes('insufficient')) {
+        errorMessage.toLowerCase().includes('not enough') ||
+        errorMessage.toLowerCase().includes('insufficient')) {
         // Extract ingredient name and quantities if possible
         const match = errorMessage.match(/(?:doesn't have enough|not enough|insufficient)\s+([\w\s]+)\.?\s*(?:Required[:\s]+([\d.]+))?(?:,\s*Available[:\s]+(\d+))?/i);
         if (match) {
@@ -158,7 +158,7 @@ export class OrdersService {
         }
         return `⚠️ One or more ingredients have INSUFFICIENT STOCK. Please check inventory and purchase missing items immediately.`;
       }
-      
+
       // Check for "ingredient not found" errors
       if (errorMessage.toLowerCase().includes('ingredient not found')) {
         const match = errorMessage.match(/Ingredient not found[:\s]+([\w\s]+)/i);

@@ -24,10 +24,10 @@ export interface DashboardData {
   providedIn: 'root'
 })
 export class ReportsService {
-  private ordersUrl = 'http://localhost:8060/api/v1/orders';
-  private productsUrl = 'http://localhost:8060/api/v1/products';
+  private ordersUrl = '/api/v1/orders';
+  private productsUrl = '/api/v1/products';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Get dashboard data (today's summary + top dishes)
@@ -37,7 +37,7 @@ export class ReportsService {
     if (!userId) {
       throw new Error('User ID not found. Please log in again.');
     }
-    
+
     return forkJoin({
       orders: this.getOrders(userId).pipe(catchError(() => of([]))),
       products: this.getProducts(userId).pipe(catchError(() => of([])))
@@ -65,15 +65,15 @@ export class ReportsService {
         const yesterday = new Date(today);
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayEnd = new Date(today);
-        
+
         const yesterdayOrders = orders.filter(order => {
           const orderDate = new Date(order.createdAt);
           return orderDate >= yesterday && orderDate < yesterdayEnd;
         });
-        
+
         const yesterdayIncome = yesterdayOrders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-        const incomeChange = yesterdayIncome > 0 
-          ? ((totalIncome - yesterdayIncome) / yesterdayIncome) * 100 
+        const incomeChange = yesterdayIncome > 0
+          ? ((totalIncome - yesterdayIncome) / yesterdayIncome) * 100
           : 0;
 
         // Calculate top dishes from all orders
@@ -143,9 +143,9 @@ export class ReportsService {
           return orderDate >= previousPeriod.start && orderDate <= previousPeriod.end;
         });
         const previousIncome = previousOrders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-        
-        const incomeChange = previousIncome > 0 
-          ? ((income - previousIncome) / previousIncome) * 100 
+
+        const incomeChange = previousIncome > 0
+          ? ((income - previousIncome) / previousIncome) * 100
           : 0;
 
         // Group expenses by category (simplified)
@@ -240,8 +240,8 @@ export class ReportsService {
       const name = (product.name || '').toLowerCase();
 
       // Simple categorization based on product name
-      if (name.includes('ingredient') || name.includes('food') || name.includes('meat') || 
-          name.includes('vegetable') || name.includes('fruit') || name.includes('spice')) {
+      if (name.includes('ingredient') || name.includes('food') || name.includes('meat') ||
+        name.includes('vegetable') || name.includes('fruit') || name.includes('spice')) {
         categories['Ingredients'] += cost;
       } else if (name.includes('equipment') || name.includes('tool') || name.includes('machine')) {
         categories['Equipment'] += cost;
