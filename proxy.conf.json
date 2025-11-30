@@ -1,0 +1,8 @@
+{
+    "/api/v1": {
+        "target": "https://foodflow-api-gateway.azurewebsites.net",
+        "secure": true,
+        "changeOrigin": true,
+        "logLevel": "debug"
+    }
+}

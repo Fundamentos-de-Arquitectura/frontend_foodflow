@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { OrdersService } from './orders.service';
 import { ProductService } from './product.service';
 import { MenuService, BackendDish } from './menu.service';
+import { environment } from '../../environments/environment';
 
 export interface StockAlert {
   ingredientName: string;
@@ -36,7 +37,7 @@ export class StockAlertService {
     }
 
     // Fetch backend dishes directly to get ingredients array
-    const dishesUrl = '/api/v1/menu';
+    const dishesUrl = `${environment.serverBaseUrl}/menu`;
     const backendDishes$ = this.http.get<BackendDish[]>(`${dishesUrl}/users/${userId}/dishes`).pipe(
       catchError(() => of([]))
     );

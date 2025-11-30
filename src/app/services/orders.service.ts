@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // Backend Order structure (from orders service)
 export interface BackendOrderItem {
@@ -49,7 +50,7 @@ export interface Order {
   providedIn: 'root'
 })
 export class OrdersService {
-  private apiUrl = '/api/v1/orders'; // Proxy handles routing
+  private apiUrl = `${environment.serverBaseUrl}/orders`;
 
   constructor(private http: HttpClient) { }
 

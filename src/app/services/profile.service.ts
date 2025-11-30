@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface ProfileData {
   id: number;
@@ -33,7 +34,7 @@ export interface CreateProfileRequest {
   providedIn: 'root'
 })
 export class ProfileService {
-  private apiUrl = '/api/v1/profiles'; // Proxy handles routing
+  private apiUrl = `${environment.serverBaseUrl}/profiles`;
 
   constructor(private http: HttpClient) { }
 

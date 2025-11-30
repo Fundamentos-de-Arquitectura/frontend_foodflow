@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 // Backend Product structure (from inventory service)
 export interface BackendProduct {
@@ -27,7 +28,7 @@ export interface Product {
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private apiUrl = '/api/v1/products'; // Proxy handles routing
+  private apiUrl = `${environment.serverBaseUrl}/products`;
   private unitMap = new Map<string, string>(); // Store units by product name
 
   constructor(private http: HttpClient) { }

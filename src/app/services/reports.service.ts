@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface ReportData {
   periodType: string;
@@ -24,8 +25,8 @@ export interface DashboardData {
   providedIn: 'root'
 })
 export class ReportsService {
-  private ordersUrl = '/api/v1/orders';
-  private productsUrl = '/api/v1/products';
+  private ordersUrl = `${environment.serverBaseUrl}/orders`;
+  private productsUrl = `${environment.serverBaseUrl}/products`;
 
   constructor(private http: HttpClient) { }
 

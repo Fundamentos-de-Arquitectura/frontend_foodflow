@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // Backend Dish structure (from menu service)
 export interface BackendIngredient {
@@ -31,7 +32,7 @@ export interface Dish {
   providedIn: 'root'
 })
 export class MenuService {
-  private apiUrl = '/api/v1/menu'; // Proxy handles routing
+  private apiUrl = `${environment.serverBaseUrl}/menu`;
 
   constructor(private http: HttpClient) { }
 
